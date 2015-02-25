@@ -1,0 +1,66 @@
+#nameinput {
+    clear: left;
+    width: 350px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+#nameinput h2 {
+    color: black;
+}
+
+#nameinput input {
+  display: inline-block;
+    width: 200px;
+    height: 40px;
+    font-size: 20px;
+    font-family: 'Lucida Console','Open Sans', "Segoe UI", Verdana, Helvetica, Sans-Serif;
+    text-align: center;
+}
+
+#nameinput a:link, #nameinput a:active, #nameinput a:visited {
+  margin-top: 12px;
+  display: inline-block;
+  width: 200px;
+  font-size: 20px;
+  color: #fff;
+  width: 200px;
+  height: 40px;
+  background-color: #a32300;
+  padding: 8px 3px 0px 3px;
+  text-align: center;
+  text-decoration: none;
+}
+
+#nameinput a:hover {
+    color: #a32300;
+    background-color: #fff;
+}
+
+#score {
+    float: left;
+    width: 180px;
+    min-height: 284px;
+    background-color: #a32300;
+    margin-top: -1px;
+    padding: 8px;
+    font-family: 'Lucida Console','Open Sans', "Segoe UI", Verdana, Helvetica, Sans-Serif;
+    color: #fff;
+    font-weight: bold;
+}
+
+#score h4 {
+  margin: 0px;
+}
+
+#screen {
+  margin: 0px 20px;
+  margin-left: 0px;
+  clear: left;
+  float: left;
+}
+
+#individualScores {
+    margin-bottom: 50px;
+}

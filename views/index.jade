@@ -1,0 +1,24 @@
+doctype html
+html
+	head
+		title Maze Runner
+		link(rel='stylesheet' href='/css/game.css')
+
+		meta(id='viewport', name='viewport', content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=yes')
+
+		script.
+			function enterGame(){
+				var playerName = document.getElementById("playerName").value;
+				if(playerName == ""){
+					document.getElementById("playerName").value = "YOUR NAME?";
+				} else {
+					window.location.href = "./game?user='" + playerName + '';
+				}
+			}
+	body
+		#container
+			#nameinput
+				h2="Welcome, Maze Runner! Please enter your name"
+				input#playerName(type='text')
+				a(href='#', onclick="enterGame()")="Enter Game"
+				
