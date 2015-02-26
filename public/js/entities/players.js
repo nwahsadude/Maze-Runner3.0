@@ -3,6 +3,9 @@ game.PlayerEntity = me.Entity.extend({
 		this._super(me.Entity, 'init', [x, y, settings]);
 		this.body.addShape(new me.Rect(0, 0, 32, 32));
 
+		this.id = settings.id;
+		this.name = settings.name;
+
 		this.body.gravity = 0;
 		this.isCollidable = true;
 		this.type = game.MAIN_PLAYER_OBJECT;
@@ -79,6 +82,7 @@ game.PlayerEntity = me.Entity.extend({
 		
 		// return true if we moved or if the renderable was updated
 		if (this._super(me.Entity, 'update', [dt]) || this.body.vel.x !== 0 || this.body.vel.y !== 0){
+			game.socket.emit('movePlayer', {x: this.pos.x, y: this.pos.y});
 		    return true;
 		} else {
 		    return false;
@@ -89,5 +93,50 @@ game.PlayerEntity = me.Entity.extend({
 	onCollision: function(response, other){
 		// make all other objects solid
 		return true;
+	}
+});
+
+game.NetworkPlayerEntity = me.Entity.extend({
+	init: function(x, y, settings){
+		this._super(me.Entity, 'init', [x, y, settings]);
+		this.body.addShape(new me.Rect(0, 0, 32, 32));
+		this.id = settings.id;
+		this.name = settings.name;
+
+		this.body.gravity = 0;
+		this.isCollidable = true;
+		this.type = game.ENEMY_OBJECT;
+
+
+        this.renderable.addAnimation('stand-down', [0]);
+        this.renderable.addAnimation('run-down', [0, 4, 8, 12], 100);
+        this.renderable.addAnimation('stand-left', [1]);
+        this.renderable.addAnimation('run-left', [1, 5, 9, 13], 100);
+        this.renderable.addAnimation('stand-up', [2]);
+        this.renderable.addAnimation('run-up', [2, 6, 10, 14], 100);
+        this.renderable.addAnimation('stand-right', [3]);
+        this.renderable.addAnimation('run-right', [3, 7, 11, 15], 100);
+
+		this.lastAnimationUsed = "stand-down";
+		this.animationToUseThisFrame = "stand-down";
+		this.renderable.setCurrentAnimation('stand-down');
+
+
+
+	},
+
+	update: function(dt){
+		this.body.vel.x = 0;
+		this.body.vel.y = 0;
+
+		this.body.update(dt);
+
+		this._super(me.Entity, 'update', [dt]);
+		return true;
+	},
+
+	onCollision: function(response, other){
+		// Make all other objects solid
+		return false;
 	}
 });

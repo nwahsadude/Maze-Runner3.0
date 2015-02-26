@@ -108,8 +108,8 @@ html
 				game.removeEnemy({id: id});
 			});
 
-			socket.on('addPlayers', function(players){
-				game.addEnemy(players);
+			socket.on('movePlayer', function(data){
+				game.movePlayer(data);
 			});
 		});
 

@@ -58,20 +58,47 @@ io.sockets.on('connection', function(socket){
 	});
 
 	socket.on('gameReady', function(data){
-		var newPlayer = new Player(this.id, data.nme, data.room, data.posX, data.posY, "down");
+		var newPlayer = new Player(this.id, data.name, data.room, 100, 100, "down");
 
 		if(playerById(this.id)){
 			return;
 		}
 
-		this.emit('addMainPlayer', {id: newPlayer.id, name: newPlayer.name, posX: newPlayer.getX(), posY: newPlayer.getY()});
+		this.emit('addMainPlayer', {id: newPlayer.id, name: newPlayer.name, x: newPlayer.getX(), y: newPlayer.getY()});
+		socket.broadcast.emit('addPlayer', {
+				id: newPlayer.id, 
+				name: newPlayer.name, 
+				x: newPlayer.getX(), 
+				y: newPlayer.getY()
+			});
+
+		for (var i = 0; i < players.length; i++) {
+			existingPlayer = players[i];
+			this.emit("addPlayer", {
+				id: existingPlayer.id, 
+				name: existingPlayer.name, 
+				x: existingPlayer.getX(), 
+				y: existingPlayer.getY()
+			});
+		}
 
 		players.push(newPlayer);
 
 	});
 
-	socket.on('movePlayer', function(position){
+	socket.on('movePlayer', function(data){
+		var movePlayer = playerById(this.id);
 
+		if(!movePlayer){
+			conosle.log("Player not found: " + this.id);
+			return;
+		}	
+
+
+		movePlayer.setX(data.x);
+		movePlayer.setY(data.y);
+
+		this.broadcast.emit('movePlayer', {id: movePlayer.id, x: movePlayer.getX(), y: movePlayer.getY()});
 	});
 
 	socket.on('fireProjectile', function(id, source, target){

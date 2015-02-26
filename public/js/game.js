@@ -5,11 +5,11 @@ var game = {
 		volume: 1
 	},
 	playerId: '',
-	players: {},
+	players: [],
 	mouseTarget: {},
 	MAIN_PLAYER_OBJECT: 4,
 	ENEMY_OBJECT: 5,
-	mainPlayer: {},
+	mainPlayer: [],
 
 	'onload': function() {
 		me.sys.pauseOnBlur = false;
@@ -40,7 +40,7 @@ var game = {
 		me.state.set(me.state.PLAY, new game.PlayScreen());
 
 		me.pool.register("mainPlayer", game.PlayerEntity);
-		// me.pool.register("enemyPlayer", game.NetworkPlayerEntity);
+		me.pool.register("enemyPlayer", game.NetworkPlayerEntity);
 
 		me.input.bindKey(me.input.KEY.LEFT, 'left');
 		me.input.bindKey(me.input.KEY.A, 'left');
@@ -55,6 +55,15 @@ var game = {
 
 	},
 
+	getPlayerById: function(id){
+		for (var i = 0; i < this.players.length; i++) {
+			if(this.players[i].id === id){
+				return this.players[i];
+			}
+		}
+		return false;
+	},
+
 	'addMainPlayer': function(data){
 		if(!data) {return;}
 		this.mainPlayer = me.pool.pull('mainPlayer', 100, 100, {
@@ -64,8 +73,38 @@ var game = {
 			width: 32,
 			height: 32,
 			id: data.id,
+			name: data.name
 		});
 
+		this.players.push(this.mainPlayer);
 		me.game.world.addChild(this.mainPlayer, 4);
+	},
+
+	'addEnemy': function(data){
+		if(!data) {return;}
+		var player = me.pool.pull('enemyPlayer', data.x, data.y, {
+			image: 'boy',
+			spritewidth: 48,
+			spriteheight: 48,
+			width: 32,
+			height: 32,
+			id: data.id,
+			name: data.name
+		});
+		this.players.push(player);
+		me.game.world.addChild(player, 4);
+	},
+
+	'movePlayer': function(data){
+		if(!data) {return;}
+		var movePlayer = game.getPlayerById(data.id);
+
+		if(!movePlayer){
+			console.log("Player was not found");
+			return;
+		}
+
+		movePlayer.pos.x = data.x;
+		movePlayer.pos.y = data.y;
 	}
 };
