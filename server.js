@@ -52,7 +52,8 @@ io.sockets.on('connection', function(socket){
 			console.log("DISCONNECT ERROR: Player not found: " + this.id);
 			return;
 		}
-		this.emit("remove player", {id: this.id});
+
+		io.sockets.emit("removePlayer", {id: this.id, name: this.name});
 
 		players.splice(players.indexOf(removePlayer), 1);
 	});
@@ -90,15 +91,16 @@ io.sockets.on('connection', function(socket){
 		var movePlayer = playerById(this.id);
 
 		if(!movePlayer){
-			conosle.log("Player not found: " + this.id);
+			console.log("Player not found: " + this.id);
 			return;
 		}	
 
 
 		movePlayer.setX(data.x);
 		movePlayer.setY(data.y);
+		movePlayer.setDirection(data.direction);
 
-		this.broadcast.emit('movePlayer', {id: movePlayer.id, x: movePlayer.getX(), y: movePlayer.getY()});
+		this.broadcast.emit('movePlayer', {id: movePlayer.id, x: movePlayer.getX(), y: movePlayer.getY(), direction: movePlayer.getDirection()});
 	});
 
 	socket.on('fireProjectile', function(id, source, target){

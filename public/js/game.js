@@ -67,9 +67,9 @@ var game = {
 	'addMainPlayer': function(data){
 		if(!data) {return;}
 		this.mainPlayer = me.pool.pull('mainPlayer', 100, 100, {
-			image: 'boy',
-			spritewidth: 48,
-			spriteheight: 48,
+			image: 'rockani',
+			spritewidth: 32,
+			spriteheight: 32,
 			width: 32,
 			height: 32,
 			id: data.id,
@@ -78,14 +78,15 @@ var game = {
 
 		this.players.push(this.mainPlayer);
 		me.game.world.addChild(this.mainPlayer, 4);
+		$('#individualScores').append('<li>' + this.mainPlayer.name + '</li>');
 	},
 
 	'addEnemy': function(data){
 		if(!data) {return;}
 		var player = me.pool.pull('enemyPlayer', data.x, data.y, {
-			image: 'boy',
-			spritewidth: 48,
-			spriteheight: 48,
+			image: 'rockani',
+			spritewidth: 32,
+			spriteheight: 32,
 			width: 32,
 			height: 32,
 			id: data.id,
@@ -93,6 +94,7 @@ var game = {
 		});
 		this.players.push(player);
 		me.game.world.addChild(player, 4);
+		$('#individualScores').append('<li id=' + "'" + player.name + "'" +'>'  + player.name + '</li>');
 	},
 
 	'movePlayer': function(data){
@@ -106,5 +108,20 @@ var game = {
 
 		movePlayer.pos.x = data.x;
 		movePlayer.pos.y = data.y;
+		movePlayer.direction = data.direction;
+	},
+
+	'removeEnemy': function(data){
+		// $('#'+"'"+ data.name +"'" + 'd').remove();
+		console.log(data);
+		if(!data) {return;}
+		var removePlayer = game.getPlayerById(data.id);
+
+		if(!removePlayer){
+			console.log("Player was not found");
+			return;
+		}
+		console.log("running");
+		me.game.world.removeChild(removePlayer);
 	}
 };

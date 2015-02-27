@@ -22,10 +22,16 @@ game.PlayerEntity = me.Entity.extend({
         this.renderable.addAnimation('run-up', [2, 6, 10, 14], 100);
         this.renderable.addAnimation('stand-right', [3]);
         this.renderable.addAnimation('run-right', [3, 7, 11, 15], 100);
+        this.renderable.addAnimation('moveleft', [0,1,2], 100);
+        this.renderable.addAnimation('moveright', [3,4,5], 100);
 
-		this.lastAnimationUsed = "stand-down";
-		this.animationToUseThisFrame = "stand-down";
-		this.renderable.setCurrentAnimation('stand-down');
+		// this.lastAnimationUsed = "stand-down";
+		// this.animationToUseThisFrame = "stand-down";
+		// this.renderable.setCurrentAnimation('stand-down');
+
+		this.lastAnimationUsed = "moveright";
+		this.animationToUseThisFrame = "moveright";
+		this.renderable.setCurrentAnimation('moveright');
 
 		this.body.maxVel.x = this.body.maxVel.y = 25;
 	},
@@ -35,35 +41,67 @@ game.PlayerEntity = me.Entity.extend({
 		this.body.vel.y = 0;
 		this.g_dt = dt / 20;
 
+		// if (me.input.isKeyPressed('left')){
+		//     this.animationToUseThisFrame = 'run-left';a
+		//     this.body.vel.x -= 1;
+		//     this.direction = 'left';
+		// } else if (me.input.isKeyPressed('right')){
+		//     this.animationToUseThisFrame = 'run-right';
+		//     this.body.vel.x += 1;
+		//     this.direction = 'right';
+		// } else {
+		//     if (this.direction === 'left') {
+		//         this.animationToUseThisFrame = 'stand-left';
+		//     } else if (this.direction === 'right')  {
+		//         this.animationToUseThisFrame = 'stand-right';
+		//     }
+		// }
+
+		// if (me.input.isKeyPressed('up')){
+		//     this.animationToUseThisFrame = 'run-up';
+		//     this.body.vel.y -= 1;
+		//     this.direction = 'up';
+		// }else if (me.input.isKeyPressed('down')){
+		//     this.animationToUseThisFrame = 'run-down';
+		//     this.body.vel.y += 1;
+		//     this.direction = 'down';
+		// } else {
+		//     if (this.direction === 'up') {
+		//         this.animationToUseThisFrame = 'stand-up';
+		//     } else if (this.direction === 'down'){
+		//         this.animationToUseThisFrame = 'stand-down';
+		//     }
+		// }
+
 		if (me.input.isKeyPressed('left')){
-		    this.animationToUseThisFrame = 'run-left';
+		    this.animationToUseThisFrame = 'moveleft';
 		    this.body.vel.x -= 1;
 		    this.direction = 'left';
 		} else if (me.input.isKeyPressed('right')){
-		    this.animationToUseThisFrame = 'run-right';
+		    this.animationToUseThisFrame = 'moveright';
 		    this.body.vel.x += 1;
 		    this.direction = 'right';
 		} else {
 		    if (this.direction === 'left') {
-		        this.animationToUseThisFrame = 'stand-left';
+		        this.animationToUseThisFrame = 'moveleft';
 		    } else if (this.direction === 'right')  {
-		        this.animationToUseThisFrame = 'stand-right';
+		        this.animationToUseThisFrame = 'moveright';
 		    }
 		}
 
 		if (me.input.isKeyPressed('up')){
-		    this.animationToUseThisFrame = 'run-up';
+		    this.animationToUseThisFrame = 'moveleft';
 		    this.body.vel.y -= 1;
 		    this.direction = 'up';
 		}else if (me.input.isKeyPressed('down')){
-		    this.animationToUseThisFrame = 'run-down';
+		    this.animationToUseThisFrame = 'moveright';
 		    this.body.vel.y += 1;
 		    this.direction = 'down';
 		} else {
 		    if (this.direction === 'up') {
-		        this.animationToUseThisFrame = 'stand-up';
+		        this.animationToUseThisFrame = 'moveleft';
 		    } else if (this.direction === 'down'){
-		        this.animationToUseThisFrame = 'stand-down';
+		        this.animationToUseThisFrame = 'moveright';
 		    }
 		}
 
@@ -82,7 +120,7 @@ game.PlayerEntity = me.Entity.extend({
 		
 		// return true if we moved or if the renderable was updated
 		if (this._super(me.Entity, 'update', [dt]) || this.body.vel.x !== 0 || this.body.vel.y !== 0){
-			game.socket.emit('movePlayer', {x: this.pos.x, y: this.pos.y});
+			game.socket.emit('movePlayer', {x: this.pos.x, y: this.pos.y, direction: this.direction});
 		    return true;
 		} else {
 		    return false;
@@ -116,10 +154,16 @@ game.NetworkPlayerEntity = me.Entity.extend({
         this.renderable.addAnimation('run-up', [2, 6, 10, 14], 100);
         this.renderable.addAnimation('stand-right', [3]);
         this.renderable.addAnimation('run-right', [3, 7, 11, 15], 100);
+        this.renderable.addAnimation('moveleft', [0,1,2], 100);
+        this.renderable.addAnimation('moveright', [3,4,5], 100);
 
-		this.lastAnimationUsed = "stand-down";
-		this.animationToUseThisFrame = "stand-down";
-		this.renderable.setCurrentAnimation('stand-down');
+		// this.lastAnimationUsed = "stand-down";
+		// this.animationToUseThisFrame = "stand-down";
+		// this.renderable.setCurrentAnimation('stand-down');
+
+		this.lastAnimationUsed = "moveright";
+		this.animationToUseThisFrame = "moveright";
+		this.renderable.setCurrentAnimation('moveright');
 
 
 
@@ -128,6 +172,31 @@ game.NetworkPlayerEntity = me.Entity.extend({
 	update: function(dt){
 		this.body.vel.x = 0;
 		this.body.vel.y = 0;
+
+		// if (this.direction === 'up'){
+		// 	this.animationToUseThisFrame = 'run-up';
+		// } else if (this.direction === 'down') {
+		// 	this.animationToUseThisFrame = 'run-down';
+		// } else if (this.direction === 'right'){
+		// 	this.animationToUseThisFrame = 'run-right';
+		// } else if (this.direction === 'left'){
+		// 	this.animationToUseThisFrame = 'run-left';
+		// }
+
+		if (this.direction === 'up'){
+			this.animationToUseThisFrame = 'moveleft';
+		} else if (this.direction === 'down') {
+			this.animationToUseThisFrame = 'moveright';
+		} else if (this.direction === 'right'){
+			this.animationToUseThisFrame = 'moveright';
+		} else if (this.direction === 'left'){
+			this.animationToUseThisFrame = 'moveleft';
+		}
+
+		if (this.animationToUseThisFrame != this.lastAnimationUsed) {
+		  this.lastAnimationUsed = this.animationToUseThisFrame;
+		  this.renderable.setCurrentAnimation(this.animationToUseThisFrame);
+		}
 
 		this.body.update(dt);
 

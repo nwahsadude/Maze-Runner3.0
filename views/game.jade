@@ -105,7 +105,8 @@ html
 				if(game.playerId === id){
 					window.location = '/';
 				}
-				game.removeEnemy({id: id});
+				console.log(id);
+				game.removeEnemy(id);
 			});
 
 			socket.on('movePlayer', function(data){
