@@ -10,7 +10,12 @@ game.PlayerEntity = me.Entity.extend({
 		this.isCollidable = true;
 		this.type = game.MAIN_PLAYER_OBJECT;
 
+
 		this.accelForce = 4;
+
+		// Move this to a weapon file maybe
+		this.isWeaponCoolDown = false;
+		this.weaponCoolDownTime = 5;
 
 		me.game.viewport.follow(this.pos, me.game.viewport.AXIS.BOTH);
 
@@ -40,6 +45,7 @@ game.PlayerEntity = me.Entity.extend({
 		this.body.vel.x = 0;
 		this.body.vel.y = 0;
 		this.g_dt = dt / 20;
+		this.localPos = me.game.viewport.localToWorld(me.input.mouse.pos.x, me.input.mouse.pos.y);
 
 		// if (me.input.isKeyPressed('left')){
 		//     this.animationToUseThisFrame = 'run-left';a
@@ -103,6 +109,16 @@ game.PlayerEntity = me.Entity.extend({
 		    } else if (this.direction === 'down'){
 		        this.animationToUseThisFrame = 'moveright';
 		    }
+		}
+
+		if (me.input.isKeyPressed('shoot')){
+			if(!this.isWeaponCoolDown && me.input.isKeyPressed('shoot')){
+			    // console.log(this.weaponCoolDownTime)
+				// this.isWeaponCoolDown = true;
+				setTimeout(function() {this.isWeaponCoolDown = false}, this.weaponCoolDownTime);
+				game.fireBullet(this.id, {x: this.pos.x + 16, y: this.pos.y + 16}, this.localPos, true)
+			}
+
 		}
 
 		if (this.animationToUseThisFrame != this.lastAnimationUsed) {

@@ -19,6 +19,7 @@ html
 		script(src='js/resources.js')
 		script(src='js/screens/play.js')
 		script(src='js/entities/players.js')
+		script(src='js/entities/projectiles.js')
 
 	body
 		#container
@@ -112,6 +113,10 @@ html
 			socket.on('movePlayer', function(data){
 				game.movePlayer(data);
 			});
+
+			socket.on('fireProjectile', function(id, source, target){
+				game.fireBullet(id, source, target);
+			})
 		});
 
 

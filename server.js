@@ -104,7 +104,7 @@ io.sockets.on('connection', function(socket){
 	});
 
 	socket.on('fireProjectile', function(id, source, target){
-
+		socket.broadcast.emit('fireProjectile', id, source, target);
 	});
 
 	socket.on('playerHit', function(data){

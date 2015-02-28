@@ -33,7 +33,7 @@ var game = {
 		me.audio.init('ogg,mp3');
 		me.loader.onload = this.loaded.bind(this);
 		me.loader.preload(game.resources);
-		me.state.change(me.state.LOADING);
+		me.state .change(me.state.LOADING);
 	},
 
 	'loaded': function() {
@@ -41,6 +41,7 @@ var game = {
 
 		me.pool.register("mainPlayer", game.PlayerEntity);
 		me.pool.register("enemyPlayer", game.NetworkPlayerEntity);
+		me.pool.register("bullet", game.Bullet);
 
 		me.input.bindKey(me.input.KEY.LEFT, 'left');
 		me.input.bindKey(me.input.KEY.A, 'left');
@@ -50,6 +51,8 @@ var game = {
 		me.input.bindKey(me.input.KEY.W, 'up');
 		me.input.bindKey(me.input.KEY.DOWN, 'down');
 		me.input.bindKey(me.input.KEY.S, 'down');
+
+		me.input.bindKey(me.input.KEY.SPACE, 'shoot')
 
 		me.state.change(me.state.PLAY);
 
@@ -123,5 +126,23 @@ var game = {
 		}
 		console.log("running");
 		me.game.world.removeChild(removePlayer);
+	},
+
+	'fireBullet': function(id, source, target, broadcast){
+		var obj = me.pool.pull('bullet', source.x, source.y, {
+			image: 'bullet',
+			spritewidth: 24,
+			spriteheight: 24,
+			width: 24,
+			height: 24,
+			target: target,
+			id: id
+		});
+
+		me.game.world.addChild(obj, 6);
+
+		if (broadcast){
+			this.socket.emit('fireProjectile', id, source, target);
+		}
 	}
 };
