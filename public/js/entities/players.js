@@ -15,7 +15,7 @@ game.PlayerEntity = me.Entity.extend({
 
 		// Move this to a weapon file maybe
 		this.isWeaponCoolDown = false;
-		this.weaponCoolDownTime = 5;
+		this.weaponCoolDownTime = 300;
 
 		me.game.viewport.follow(this.pos, me.game.viewport.AXIS.BOTH);
 
@@ -83,10 +83,12 @@ game.PlayerEntity = me.Entity.extend({
 		    this.animationToUseThisFrame = 'moveleft';
 		    this.body.vel.x -= 1;
 		    this.direction = 'left';
+		    this.stateChanged = true;
 		} else if (me.input.isKeyPressed('right')){
 		    this.animationToUseThisFrame = 'moveright';
 		    this.body.vel.x += 1;
 		    this.direction = 'right';
+		    this.stateChanged = true;
 		} else {
 		    if (this.direction === 'left') {
 		        this.animationToUseThisFrame = 'moveleft';
@@ -99,10 +101,12 @@ game.PlayerEntity = me.Entity.extend({
 		    this.animationToUseThisFrame = 'moveleft';
 		    this.body.vel.y -= 1;
 		    this.direction = 'up';
+		    this.stateChanged = true;
 		}else if (me.input.isKeyPressed('down')){
 		    this.animationToUseThisFrame = 'moveright';
 		    this.body.vel.y += 1;
 		    this.direction = 'down';
+		    this.stateChanged = true;
 		} else {
 		    if (this.direction === 'up') {
 		        this.animationToUseThisFrame = 'moveleft';
@@ -110,13 +114,11 @@ game.PlayerEntity = me.Entity.extend({
 		        this.animationToUseThisFrame = 'moveright';
 		    }
 		}
-
 		if (me.input.isKeyPressed('shoot')){
 			if(!this.isWeaponCoolDown && me.input.isKeyPressed('shoot')){
-			    // console.log(this.weaponCoolDownTime)
-				// this.isWeaponCoolDown = true;
-				setTimeout(function() {this.isWeaponCoolDown = false}, this.weaponCoolDownTime);
-				game.fireBullet(this.id, {x: this.pos.x + 16, y: this.pos.y + 16}, this.localPos, true)
+				this.isWeaponCoolDown = true;
+				game.fireBullet(this.id, {x: this.pos.x + 16, y: this.pos.y + 16}, this.localPos, true);
+				setTimeout(function() {game.mainPlayer.isWeaponCoolDown = false;}, this.weaponCoolDownTime);
 			}
 
 		}
@@ -133,10 +135,12 @@ game.PlayerEntity = me.Entity.extend({
 		this.body.update(dt);
 
 		me.collision.check(this);
-		
+		if (this.stateChanged){
+			game.socket.emit('movePlayer', {x: this.pos.x, y: this.pos.y, direction: this.direction});
+			this.stateChanged = false;
+		}
 		// return true if we moved or if the renderable was updated
 		if (this._super(me.Entity, 'update', [dt]) || this.body.vel.x !== 0 || this.body.vel.y !== 0){
-			game.socket.emit('movePlayer', {x: this.pos.x, y: this.pos.y, direction: this.direction});
 		    return true;
 		} else {
 		    return false;

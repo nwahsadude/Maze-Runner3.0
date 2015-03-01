@@ -45,7 +45,7 @@ io.sockets.on('connection', function(socket){
 	socket.on('disconnect', function(){
 		if(players.length === 0){return;}
 		
-		console.log("Player has disconnected: " + this.id);
+		console.log("Disconnect: Player has disconnected: " + this.id);
 
 		var removePlayer = playerById(this.id);
 		if(!removePlayer){
@@ -91,7 +91,7 @@ io.sockets.on('connection', function(socket){
 		var movePlayer = playerById(this.id);
 
 		if(!movePlayer){
-			console.log("Player not found: " + this.id);
+			console.log("Move Player: Player not found: " + this.id);
 			return;
 		}	
 

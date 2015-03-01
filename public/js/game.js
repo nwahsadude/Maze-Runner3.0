@@ -22,7 +22,7 @@ var game = {
 		// add "#debug" to the URL to enable the debug Panel
 		if (document.location.hash === "#debug") {
 		    window.onReady(function () {
-		        me.plugin.register.defer(this, debugPanel, "debug");
+		        me.plugin.register.defer(this, me.debug.Panel, "debug", me.input.KEY.V);
 		    });
 		}
 
@@ -116,7 +116,6 @@ var game = {
 
 	'removeEnemy': function(data){
 		// $('#'+"'"+ data.name +"'" + 'd').remove();
-		console.log(data);
 		if(!data) {return;}
 		var removePlayer = game.getPlayerById(data.id);
 
@@ -124,7 +123,6 @@ var game = {
 			console.log("Player was not found");
 			return;
 		}
-		console.log("running");
 		me.game.world.removeChild(removePlayer);
 	},
 

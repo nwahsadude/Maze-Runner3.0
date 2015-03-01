@@ -7,6 +7,7 @@ game.Bullet = me.Entity.extend({
 		this.alwaysUpdate = true;
 		this.body.gravity = 0;
 		this.isCollidable = true;
+		
 		this.body.setCollisionMask(me.collision.types.MAIN_PLAYER_OBJECT);
 
 		this.shotAngle = settings.angle;
@@ -42,6 +43,14 @@ game.Bullet = me.Entity.extend({
 	},
 
 	onCollision: function(response, other){
+		console.log(response);
+		switch(response.b.body.entity.type){
+			case "game.ENEMY_OBJECT":
+				this.body.setCollisionMask(me.collision.types.NO_OBJECT);
+				me.game.world.removeChild(this);
+				game.hitPlayer(this.id, response.b.id);
+				return false;
+		}
 		// Make all other objects solid
 		return true;
 	}
