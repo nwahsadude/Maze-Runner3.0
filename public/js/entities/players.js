@@ -11,9 +11,10 @@ game.PlayerEntity = me.Entity.extend({
 		this.type = game.MAIN_PLAYER_OBJECT;
 
 
+
 		this.accelForce = 4;
 
-		// Move this to a weapon file maybe
+		// TODO Move this to a weapon file maybe
 		this.isWeaponCoolDown = false;
 		this.weaponCoolDownTime = 300;
 
@@ -117,7 +118,7 @@ game.PlayerEntity = me.Entity.extend({
 		if (me.input.isKeyPressed('shoot')){
 			if(!this.isWeaponCoolDown && me.input.isKeyPressed('shoot')){
 				this.isWeaponCoolDown = true;
-				game.fireBullet(this.id, {x: this.pos.x + 16, y: this.pos.y + 16}, this.localPos, true);
+				game.fireBullet(this.id, {x: this.pos.x + 36, y: this.pos.y + 36}, this.localPos, true);
 				setTimeout(function() {game.mainPlayer.isWeaponCoolDown = false;}, this.weaponCoolDownTime);
 			}
 
@@ -148,7 +149,7 @@ game.PlayerEntity = me.Entity.extend({
 
 	},
 
-	onCollision: function(response, other){
+	onCollision: function(response){
 		// make all other objects solid
 		return true;
 	}
@@ -163,7 +164,7 @@ game.NetworkPlayerEntity = me.Entity.extend({
 
 		this.body.gravity = 0;
 		this.isCollidable = true;
-		this.type = game.ENEMY_OBJECT;
+		this.type = "networkPlayer";
 
 
         this.renderable.addAnimation('stand-down', [0]);
