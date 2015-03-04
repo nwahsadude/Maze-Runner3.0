@@ -43,6 +43,7 @@ game = {
         me.pool.register("mainPlayer", game.PlayerEntity);
         me.pool.register("enemyPlayer", game.NetworkPlayerEntity);
         me.pool.register("bullet", game.Bullet);
+        me.pool.register("networkBullet", game.networkBullet);
 
         me.input.bindKey(me.input.KEY.LEFT, 'left');
         me.input.bindKey(me.input.KEY.A, 'left');
@@ -153,13 +154,57 @@ game = {
         }
     },
 
+    'fireNetworkBullet': function (id, source, target) {
+        var obj = me.pool.pull('networkBullet', source.x, source.y, {
+            image: 'bullet',
+            spritewidth: 24,
+            spriteheight: 24,
+            width: 24,
+            height: 24,
+            target: target,
+            id: id
+        });
+
+        me.game.world.addChild(obj, 6);
+    },
+
     'hitPlayer': function (sourceId, targetId) {
         if(!targetId){return};
 
         var player = game.getPlayerById(targetId);
 
-        //player.health--;
+        if (!player){
+            console.log("Hitplayer: Player not found");
+            return;
+        }
 
-        console.log("Hit: " + player.name);
+        player.health--;
+
+        //console.log(sourceId, targetId, game.mainPlayer.id);
+        if(targetId === game.mainPlayer.id){
+            if (player.health >= 0){
+                this.socket.emit('playerHit', {id: player.id, health: player.health});
+            } else if (player.health < 0){
+                player.health = 3;
+                console.log(player.name + " has died!");
+            }
+        }
+
+
+        //console.log("Hit: " + player.name);
+    },
+
+    'remotePlayerHealthChanged': function(data){
+        var remotePlayer = game.getPlayerById(data.id)
+
+        if (!remotePlayer){
+            console.log("remotePlayerHealthChanged: Player not found");
+            return;
+        }
+
+        remotePlayer.health = data.health;
+
+        console.log(remotePlayer.name + "'s health is " + remotePlayer.health);
     }
+
 };

@@ -22,8 +22,7 @@ app.get('/game', function(req, res){
 
 var server = http.createServer(app),
 	io = socketio.listen(server);
-var	players,
-	rooms;
+var	players;
 
 function init(){
 	players = [];
@@ -74,7 +73,7 @@ io.sockets.on('connection', function(socket){
 			});
 
 		for (var i = 0; i < players.length; i++) {
-			existingPlayer = players[i];
+			var existingPlayer = players[i];
 			this.emit("addPlayer", {
 				id: existingPlayer.id, 
 				name: existingPlayer.name, 
@@ -108,7 +107,7 @@ io.sockets.on('connection', function(socket){
 	});
 
 	socket.on('playerHit', function(data){
-
+        this.broadcast.emit('remotePlayerHit', data);
 	});
 
 	socket.on('scoreHit', function(){

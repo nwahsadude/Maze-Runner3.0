@@ -6,9 +6,15 @@ game.PlayerEntity = me.Entity.extend({
 		this.id = settings.id;
 		this.name = settings.name;
 
+        this.health = 3;
+
 		this.body.gravity = 0;
 		this.isCollidable = true;
-		this.type = game.MAIN_PLAYER_OBJECT;
+		//this.type = game.MAIN_PLAYER_OBJECT;
+		this.type = me.collision.types.PLAYER_OBJECT;
+        this.body.collisionType = me.collision.types.PLAYER_OBJECT;
+
+        this.body.setCollisionMask(me.collision.types.WORLD_SHAPE | me.collision.types.PROJECTILE_OBJECT);
 
 
 
@@ -162,9 +168,12 @@ game.NetworkPlayerEntity = me.Entity.extend({
 		this.id = settings.id;
 		this.name = settings.name;
 
+        this.health = 3;
+
 		this.body.gravity = 0;
 		this.isCollidable = true;
 		this.type = "networkPlayer";
+        this.body.collisionType = me.collision.types.ENEMY_OBJECT;
 
 
         this.renderable.addAnimation('stand-down', [0]);
