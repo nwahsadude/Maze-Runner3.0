@@ -1,7 +1,7 @@
 game.Bullet = me.Entity.extend({
 	init: function(x, y, settings){
 		this._super(me.Entity, 'init', [x, y, settings]);
-		this.body.addShape(new me.Rect(0, 0, 32, 32));
+		this.body.addShape(new me.Rect(0, 0, 24, 24));
 
 		this.id = settings.id;
 		this.alwaysUpdate = true;
@@ -49,32 +49,34 @@ game.Bullet = me.Entity.extend({
 	},
 
 	onCollision: function(response) {
-         //   console.log(response);
-        switch(response.b.type){
-            case "networkPlayer":
-				this.body.setCollisionMask(me.collision.types.NO_OBJECT);
-				me.game.world.removeChild(this);
-				game.hitPlayer(this.id, response.a.id);
-				return false;
-            case 4 :
-				this.body.setCollisionMask(me.collision.types.PLAYER_OBJECT);
-                console.log("Hit main player ignore")
-                return false;
-            default :
-                console.log("hit wall or something ");
-				this.body.setCollisionMask(me.collision.types.NO_OBJECT);
-                me.game.world.removeChild(this);
-                return false;
-		}
+        if (response.a.id != response.b.id){
+            switch(response.b.type){
+                case "networkPlayer":
+                    this.body.setCollisionMask(me.collision.types.NO_OBJECT);
+                    me.game.world.removeChild(this);
+                    game.hitPlayer(this.id, response.b.id);
+                    return false;
+                case 4 :
+                    this.body.setCollisionMask(me.collision.types.PLAYER_OBJECT);
+                    return false;
+                default :
+                    this.body.setCollisionMask(me.collision.types.NO_OBJECT);
+                    me.game.world.removeChild(this);
+                    return false;
+            }
+        } else if(response.a.id === response.b.id){
+            return false;
+
+        }
         // Make all other objects solid
-		return false;
+		return true;
 	}
 });
 
 game.networkBullet = me.Entity.extend({
     init: function(x, y, settings){
         this._super(me.Entity, 'init', [x, y, settings]);
-        this.body.addShape(new me.Rect(0, 0, 32, 32));
+        this.body.addShape(new me.Rect(0, 0, 24, 24));
 
         this.id = settings.id;
         this.alwaysUpdate = true;
@@ -82,7 +84,9 @@ game.networkBullet = me.Entity.extend({
         this.isCollidable = true;
         this.type = "remoteBullet"
 
+		this.body.collisionType = me.collision.types.PROJECTILE_OBJECT;
         this.body.setCollisionMask(me.collision.types.WORLD_SHAPE | me.collision.types.PLAYER_OBJECT | me.collision.types.ENEMY_OBJECT);
+        //console.log(game.mainPlayer, game.players);
 
         this.shotAngle = settings.angle;
         this.renderable.angle = this.shotAngle;
@@ -121,20 +125,30 @@ game.networkBullet = me.Entity.extend({
     },
 
     onCollision: function(response) {
-           console.log(response);
-        switch(response.b.type){
-            case 1:
-                this.body.setCollisionMask(me.collision.types.NO_OBJECT);
-                console.log("hit network player");
-                me.game.world.removeChild(this);
-                //game.hitPlayer(this.id, response.a.id);
+        var playerTemp,
+            bulletId;
+        if(response.a.type === "remoteBullet"){
+            playerTemp = response.b;
+            bulletId = response.a.id;
+        } else if (response.b.type === "remoteBullet"){
+            playerTemp = response.a;
+            bulletId = response.b.id;
+        }
+        switch(playerTemp.type){
+            case "networkPlayer":
+                if(playerTemp.id != bulletId){
+                    this.body.setCollisionMask(me.collision.types.NO_OBJECT);
+                    me.game.world.removeChild(this);
+                    return false;
+                }
                 return false;
-            case 4:
-                this.body.setCollisionMask(me.collision.types.PLAYER_OBJECT);
-                console.log("Hit main player ignore")
+            case "mainPlayer" :
+                this.body.setCollisionMask(me.collision.types.NO_OBJECT);
+                me.game.world.removeChild(this);
+                playerTemp.pos.x = playerTemp.pos.x + response.overlapV.x;
+                playerTemp.pos.y = playerTemp.pos.y + response.overlapV.y;
                 return false;
             default :
-                console.log("hit wall or something ");
                 this.body.setCollisionMask(me.collision.types.NO_OBJECT);
                 me.game.world.removeChild(this);
                 return false;

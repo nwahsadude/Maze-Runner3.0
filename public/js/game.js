@@ -12,6 +12,7 @@ game = {
     ENEMY_OBJECT: 5,
     mainPlayer: [],
 
+
     'onload': function () {
         me.sys.pauseOnBlur = false;
         me.sys.fps = 60;
@@ -180,9 +181,9 @@ game = {
 
         player.health--;
 
-        //console.log(sourceId, targetId, game.mainPlayer.id);
-        if(targetId === game.mainPlayer.id){
+        if(sourceId === game.mainPlayer.id){
             if (player.health >= 0){
+                game.data.score++;
                 this.socket.emit('playerHit', {id: player.id, health: player.health});
             } else if (player.health < 0){
                 player.health = 3;
@@ -191,7 +192,7 @@ game = {
         }
 
 
-        //console.log("Hit: " + player.name);
+        console.log("Hit: " + player.name);
     },
 
     'remotePlayerHealthChanged': function(data){
@@ -201,7 +202,6 @@ game = {
             console.log("remotePlayerHealthChanged: Player not found");
             return;
         }
-
         remotePlayer.health = data.health;
 
         console.log(remotePlayer.name + "'s health is " + remotePlayer.health);

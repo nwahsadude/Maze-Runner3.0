@@ -11,14 +11,13 @@ game.PlayerEntity = me.Entity.extend({
 		this.body.gravity = 0;
 		this.isCollidable = true;
 		//this.type = game.MAIN_PLAYER_OBJECT;
-		this.type = me.collision.types.PLAYER_OBJECT;
+		this.type = "mainPlayer";
         this.body.collisionType = me.collision.types.PLAYER_OBJECT;
 
         this.body.setCollisionMask(me.collision.types.WORLD_SHAPE | me.collision.types.PROJECTILE_OBJECT);
 
 
 
-		this.accelForce = 4;
 
 		// TODO Move this to a weapon file maybe
 		this.isWeaponCoolDown = false;
@@ -44,14 +43,19 @@ game.PlayerEntity = me.Entity.extend({
 		this.lastAnimationUsed = "moveright";
 		this.animationToUseThisFrame = "moveright";
 		this.renderable.setCurrentAnimation('moveright');
+        //console.log(this.body);
+        this.body.setVelocity(4, 4);
+        this.body.setFriction(.4, .4);
+        //this.body.setMaxVelocity(25, 25);
 
-		this.body.maxVel.x = this.body.maxVel.y = 25;
+		//this.accelForce = 40;
+		//this.body.maxVel.x = this.body.maxVel.y = 25;
 	},
 
 	update: function(dt){
-		this.body.vel.x = 0;
-		this.body.vel.y = 0;
-		this.g_dt = dt / 20;
+		//this.body.vel.x = 0;
+		//this.body.vel.y = 0;
+		//this.g_dt = dt / 20;
 		this.localPos = me.game.viewport.localToWorld(me.input.mouse.pos.x, me.input.mouse.pos.y);
 
 		// if (me.input.isKeyPressed('left')){
@@ -88,12 +92,14 @@ game.PlayerEntity = me.Entity.extend({
 
 		if (me.input.isKeyPressed('left')){
 		    this.animationToUseThisFrame = 'moveleft';
-		    this.body.vel.x -= 1;
+		    //this.body.vel.x -= 1;
+            this.body.vel.x -= this.body.accel.x * me.timer.tick;
 		    this.direction = 'left';
 		    this.stateChanged = true;
 		} else if (me.input.isKeyPressed('right')){
 		    this.animationToUseThisFrame = 'moveright';
-		    this.body.vel.x += 1;
+		    //this.body.vel.x += 1;
+            this.body.vel.x += this.body.accel.x * me.timer.tick;
 		    this.direction = 'right';
 		    this.stateChanged = true;
 		} else {
@@ -106,12 +112,14 @@ game.PlayerEntity = me.Entity.extend({
 
 		if (me.input.isKeyPressed('up')){
 		    this.animationToUseThisFrame = 'moveleft';
-		    this.body.vel.y -= 1;
+		    //this.body.vel.y -= 1;
+            this.body.vel.y -= this.body.accel.y * me.timer.tick;
 		    this.direction = 'up';
 		    this.stateChanged = true;
 		}else if (me.input.isKeyPressed('down')){
 		    this.animationToUseThisFrame = 'moveright';
-		    this.body.vel.y += 1;
+		    //this.body.vel.y += 1;
+            this.body.vel.y += this.body.accel.y * me.timer.tick;
 		    this.direction = 'down';
 		    this.stateChanged = true;
 		} else {
@@ -124,7 +132,7 @@ game.PlayerEntity = me.Entity.extend({
 		if (me.input.isKeyPressed('shoot')){
 			if(!this.isWeaponCoolDown && me.input.isKeyPressed('shoot')){
 				this.isWeaponCoolDown = true;
-				game.fireBullet(this.id, {x: this.pos.x + 36, y: this.pos.y + 36}, this.localPos, true);
+				game.fireBullet(this.id, {x: this.pos.x, y: this.pos.y}, this.localPos, true);
 				setTimeout(function() {game.mainPlayer.isWeaponCoolDown = false;}, this.weaponCoolDownTime);
 			}
 
@@ -136,8 +144,8 @@ game.PlayerEntity = me.Entity.extend({
 		}
 
 
-		this.body.vel.normalize();
-		this.body.vel.scale(this.accelForce * this.g_dt);
+		//this.body.vel.normalize();
+		//this.body.vel.scale(this.body.accel * this.g_dt);
 
 		this.body.update(dt);
 
