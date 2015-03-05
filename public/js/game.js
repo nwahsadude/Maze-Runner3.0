@@ -170,7 +170,7 @@ game = {
     },
 
     'hitPlayer': function (sourceId, targetId) {
-        if(!targetId){return};
+        if(!targetId || !sourceId){return};
 
         var player = game.getPlayerById(targetId);
 
@@ -205,6 +205,15 @@ game = {
         remotePlayer.health = data.health;
 
         console.log(remotePlayer.name + "'s health is " + remotePlayer.health);
+    },
+
+    'scoreHit': function(sourceId, targetId){
+        game.data.health--;
+
+        if (game.data.health < 0){
+            game.data.health = 3;
+        }
     }
+
 
 };

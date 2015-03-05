@@ -147,6 +147,7 @@ game.networkBullet = me.Entity.extend({
                 me.game.world.removeChild(this);
                 playerTemp.pos.x = playerTemp.pos.x + response.overlapV.x;
                 playerTemp.pos.y = playerTemp.pos.y + response.overlapV.y;
+                game.scoreHit(playerTemp.id, bulletId);
                 return false;
             default :
                 this.body.setCollisionMask(me.collision.types.NO_OBJECT);

@@ -150,6 +150,7 @@ game.PlayerEntity = me.Entity.extend({
 		this.body.update(dt);
 
 		me.collision.check(this);
+
 		if (this.stateChanged){
 			game.socket.emit('movePlayer', {x: this.pos.x, y: this.pos.y, direction: this.direction});
 			this.stateChanged = false;

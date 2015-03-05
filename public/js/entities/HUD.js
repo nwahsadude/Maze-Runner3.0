@@ -16,7 +16,7 @@ game.HUD.Container = me.Container.extend({
         this.name = "HUD";
 
         this.addChild(new game.HUD.ScoreItem(630, 440));
-        this.addChild(new game.HUD.HealthItem(630, 40));
+        this.addChild(new game.HUD.HealthItem(40, 440));
     }
 });
 
@@ -45,7 +45,7 @@ game.HUD.ScoreItem = me.Renderable.extend({
 
 game.HUD.HealthItem = me.Renderable.extend({
     init: function(x, y){
-        this._super(me.Renderable, 'init' [x, y, 10, 10]);
+        this._super(me.Renderable, 'init', [x, y, 10, 10]);
 
         this.font = new me.BitmapFont("32x32_font", 32);
         this.font.set("left");
