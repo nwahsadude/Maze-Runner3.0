@@ -2,8 +2,9 @@ var game;
 game = {
     data: {
         score: 0,
-        health: 3,
-        volume: 1
+        health: 10,
+        volume: 1,
+        death: 0
     },
     playerId: '',
     players: [],
@@ -11,6 +12,7 @@ game = {
     MAIN_PLAYER_OBJECT: 4,
     ENEMY_OBJECT: 5,
     mainPlayer: [],
+    ready: false,
 
 
     'onload': function () {
@@ -57,8 +59,15 @@ game = {
 
         me.input.bindKey(me.input.KEY.SPACE, 'shoot')
 
+        game.ready = true;
+
         me.state.change(me.state.PLAY);
 
+    },
+
+    getSpawnPoint: function(){
+        data = {x: Math.floor(Math.random() * (300 - 60)) + 60, y: Math.floor(Math.random() * (300 - 60) + 60)};
+        return data;
     },
 
     getPlayerById: function (id) {
@@ -93,6 +102,7 @@ game = {
         if (!data) {
             return;
         }
+        //if(!game.ready){return;}
         var player = me.pool.pull('enemyPlayer', data.x, data.y, {
             image: 'rockani',
             spritewidth: 32,
@@ -138,6 +148,7 @@ game = {
     },
 
     'fireBullet': function (id, source, target, broadcast) {
+        if(!game.ready){return;}
         var obj = me.pool.pull('bullet', source.x, source.y, {
             image: 'bullet',
             spritewidth: 24,
@@ -149,6 +160,7 @@ game = {
         });
 
         me.game.world.addChild(obj, 6);
+        //audioManager.playSound("shoot");
 
         if (broadcast) {
             this.socket.emit('fireProjectile', id, source, target);
@@ -156,6 +168,7 @@ game = {
     },
 
     'fireNetworkBullet': function (id, source, target) {
+        if(!game.ready){return;}
         var obj = me.pool.pull('networkBullet', source.x, source.y, {
             image: 'bullet',
             spritewidth: 24,
@@ -167,9 +180,11 @@ game = {
         });
 
         me.game.world.addChild(obj, 6);
+        //audioManager.playSound("shoot");
     },
 
     'hitPlayer': function (sourceId, targetId) {
+
         if(!targetId || !sourceId){return};
 
         var player = game.getPlayerById(targetId);
@@ -180,19 +195,18 @@ game = {
         }
 
         player.health--;
-
+        audioManager.playSound("shoot");
         if(sourceId === game.mainPlayer.id){
             if (player.health >= 0){
                 game.data.score++;
                 this.socket.emit('playerHit', {id: player.id, health: player.health});
             } else if (player.health < 0){
-                player.health = 3;
-                console.log(player.name + " has died!");
+                player.health = 10;
+                //console.log(player.name + " has died!");
             }
         }
 
 
-        console.log("Hit: " + player.name);
     },
 
     'remotePlayerHealthChanged': function(data){
@@ -204,15 +218,42 @@ game = {
         }
         remotePlayer.health = data.health;
 
-        console.log(remotePlayer.name + "'s health is " + remotePlayer.health);
+        //console.log(remotePlayer.name + "'s health is " + remotePlayer.health);
     },
 
     'scoreHit': function(sourceId, targetId){
         game.data.health--;
-
+        var data;
+        audioManager.playSound("shoot");
         if (game.data.health < 0){
-            game.data.health = 3;
+            data = {id: game.mainPlayer.id, name: game.mainPlayer.name};
+            me.game.world.removeChild(game.mainPlayer);
+            game.data.health = 10;
+            game.respawnMainPlayer(data);
         }
+    },
+
+    'respawnMainPlayer': function(data){
+        if (!data) {
+            return;
+        }
+        me.input.unbindKey(me.input.KEY.SPACE, 'shoot');
+        game.data.death++;
+        audioManager.playSound("respawn");
+        var spawnPoint = game.getSpawnPoint();
+        this.mainPlayer = me.pool.pull('mainPlayer', spawnPoint.x, spawnPoint.y, {
+            image: 'rockani',
+            spritewidth: 32,
+            spriteheight: 32,
+            width: 32,
+            height: 32,
+            id: data.id,
+            name: data.name
+        });
+        this.mainPlayer.health = 100;
+        me.game.world.addChild(this.mainPlayer, 4);
+        me.input.bindKey(me.input.KEY.SPACE, 'shoot');
+        game.socket.emit('movePlayer', {x: this.mainPlayer.pos.x, y: this.mainPlayer.pos.y, direction: this.mainPlayer.direction});
     }
 
 

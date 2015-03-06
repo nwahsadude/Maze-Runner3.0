@@ -7,6 +7,7 @@ game.PlayScreen = me.ScreenObject.extend({
         me.game.world.addChild(this.HUD);
 
 		game.gameReady();
+        audioManager.init();
 	},
 
     onDestroyEvent: function(){

@@ -44,7 +44,7 @@ game.PlayerEntity = me.Entity.extend({
 		this.animationToUseThisFrame = "moveright";
 		this.renderable.setCurrentAnimation('moveright');
         //console.log(this.body);
-        this.body.setVelocity(4, 4);
+        this.body.setVelocity(3.5, 3.5);
         this.body.setFriction(.4, .4);
         //this.body.setMaxVelocity(25, 25);
 
