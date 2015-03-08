@@ -9,7 +9,6 @@ game.PlayerEntity = me.Entity.extend({
         this.health = 3;
 
 		this.body.gravity = 0;
-		this.isCollidable = true;
 		//this.type = game.MAIN_PLAYER_OBJECT;
 		this.type = "mainPlayer";
         this.body.collisionType = me.collision.types.PLAYER_OBJECT;
@@ -43,7 +42,6 @@ game.PlayerEntity = me.Entity.extend({
 		this.lastAnimationUsed = "moveright";
 		this.animationToUseThisFrame = "moveright";
 		this.renderable.setCurrentAnimation('moveright');
-        //console.log(this.body);
         this.body.setVelocity(3.5, 3.5);
         this.body.setFriction(.4, .4);
         //this.body.setMaxVelocity(25, 25);
@@ -151,12 +149,12 @@ game.PlayerEntity = me.Entity.extend({
 
 		me.collision.check(this);
 
-		if (this.stateChanged){
-			game.socket.emit('movePlayer', {x: this.pos.x, y: this.pos.y, direction: this.direction});
-			this.stateChanged = false;
+		if (this.body.vel.x !== 0 || this.body.vel.y !== 0 ||this.stateChanged){
+            game.socket.emit('movePlayer', {x: this.pos.x, y: this.pos.y, direction: this.direction});
+            this.stateChanged = false;
 		}
 		// return true if we moved or if the renderable was updated
-		if (this._super(me.Entity, 'update', [dt]) || this.body.vel.x !== 0 || this.body.vel.y !== 0){
+		if (this._super(me.Entity, 'update', [dt])){
 		    return true;
 		} else {
 		    return false;
@@ -165,7 +163,10 @@ game.PlayerEntity = me.Entity.extend({
 	},
 
 	onCollision: function(response){
-		// make all other objects solid
+        if(response.a.type === "remoteBullet"){
+            return false;
+        }
+
 		return true;
 	}
 });
@@ -180,9 +181,9 @@ game.NetworkPlayerEntity = me.Entity.extend({
         this.health = 3;
 
 		this.body.gravity = 0;
-		this.isCollidable = true;
 		this.type = "networkPlayer";
         this.body.collisionType = me.collision.types.ENEMY_OBJECT;
+        this.body.setCollisionMask(me.collision.types.WORLD_SHAPE | me.collision.types.PROJECTILE_OBJECT);
 
 
         this.renderable.addAnimation('stand-down', [0]);

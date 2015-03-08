@@ -6,7 +6,6 @@ game.Bullet = me.Entity.extend({
 		this.id = settings.id;
 		this.alwaysUpdate = true;
 		this.body.gravity = 0;
-		this.isCollidable = true;
         this.type = "bullet"
 
 		this.body.collisionType = me.collision.types.PROJECTILE_OBJECT;
@@ -28,6 +27,7 @@ game.Bullet = me.Entity.extend({
 	update: function(dt){
 		this.body.vel.x += this.body.accel.x * me.timer.tick;
 		this.body.vel.y += this.body.accel.y * me.timer.tick;
+
 		this.body.computeVelocity(this.body.vel);
 
 		if (this.body.vel.x === 0 || this.body.vel.y === 0){
@@ -49,26 +49,21 @@ game.Bullet = me.Entity.extend({
 	},
 
 	onCollision: function(response) {
-        if (response.a.id != response.b.id){
+
+        if(response.a.id != response.b.id){
             switch(response.b.type){
                 case "networkPlayer":
                     this.body.setCollisionMask(me.collision.types.NO_OBJECT);
                     me.game.world.removeChild(this);
-                    game.hitPlayer(this.id, response.b.id);
                     return false;
-                case 4 :
-                    this.body.setCollisionMask(me.collision.types.PLAYER_OBJECT);
-                    return false;
-                default :
+
+                default:
                     this.body.setCollisionMask(me.collision.types.NO_OBJECT);
                     me.game.world.removeChild(this);
                     return false;
             }
-        } else if(response.a.id === response.b.id){
-            return false;
-
         }
-        // Make all other objects solid
+
 		return true;
 	}
 });
@@ -81,7 +76,6 @@ game.networkBullet = me.Entity.extend({
         this.id = settings.id;
         this.alwaysUpdate = true;
         this.body.gravity = 0;
-        this.isCollidable = true;
         this.type = "remoteBullet"
 
 		this.body.collisionType = me.collision.types.PROJECTILE_OBJECT;
@@ -98,6 +92,8 @@ game.networkBullet = me.Entity.extend({
         localTargetVector.normalize();
         localTargetVector.scaleV(new me.Vector2d(this.maxVelocity, this.maxVelocity));
         this.body.setVelocity(localTargetVector.x, localTargetVector.y);
+
+
 
     },
 
@@ -118,8 +114,6 @@ game.networkBullet = me.Entity.extend({
 
         me.collision.check(this);
 
-
-
         this._super(me.Entity, 'update', [dt]);
         return true;
     },
@@ -134,6 +128,7 @@ game.networkBullet = me.Entity.extend({
             playerTemp = response.a;
             bulletId = response.b.id;
         }
+
         switch(playerTemp.type){
             case "networkPlayer":
                 if(playerTemp.id != bulletId){
@@ -145,8 +140,12 @@ game.networkBullet = me.Entity.extend({
             case "mainPlayer" :
                 this.body.setCollisionMask(me.collision.types.NO_OBJECT);
                 me.game.world.removeChild(this);
-                playerTemp.pos.x = playerTemp.pos.x + response.overlapV.x;
-                playerTemp.pos.y = playerTemp.pos.y + response.overlapV.y;
+                //playerTemp.pos.x = playerTemp.pos.x + response.overlapV.x;
+                //playerTemp.pos.y = playerTemp.pos.y + response.overlapV.y;
+                ////this.body.vel.y -= this.body.accel.y * me.timer.tick;
+                //playerTemp.body.accel = 0;
+                //this.updateBounds();
+                ////playerTemp.pos.sub(response.overlapV);
                 game.scoreHit(playerTemp.id, bulletId);
                 return false;
             default :
@@ -154,7 +153,7 @@ game.networkBullet = me.Entity.extend({
                 me.game.world.removeChild(this);
                 return false;
         }
-        // Make all other objects solid
-        return false;
+        //Make all other objects solid
+        return true;
     }
 });
