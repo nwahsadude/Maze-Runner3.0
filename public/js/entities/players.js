@@ -5,15 +5,17 @@ game.PlayerEntity = me.Entity.extend({
 
 		this.id = settings.id;
 		this.name = settings.name;
+        this.isCollidable = true;
 
-        this.health = 3;
+        this.health = 10;
+        this.score = 0;
 
 		this.body.gravity = 0;
 		//this.type = game.MAIN_PLAYER_OBJECT;
 		this.type = "mainPlayer";
         this.body.collisionType = me.collision.types.PLAYER_OBJECT;
 
-        this.body.setCollisionMask(me.collision.types.WORLD_SHAPE | me.collision.types.PROJECTILE_OBJECT);
+        this.body.setCollisionMask(me.collision.types.WORLD_SHAPE | me.collision.types.PROJECTILE_OBJECT | me.collision.types.COLLECTABLE_OBJECT);
 
 
 
@@ -48,6 +50,27 @@ game.PlayerEntity = me.Entity.extend({
 
 		//this.accelForce = 40;
 		//this.body.maxVel.x = this.body.maxVel.y = 25;
+
+        var x = this.pos.x + 16;
+        var y = this.pos.y + 16;
+        var image = me.loader.getImage('smoke');
+        this.emitter = new me.ParticleEmitter(x, y, {
+            image: image,
+            totalParticles: 200,
+            angle: 0,
+            angleVariation: 0.3490658503988659,
+            minLife: 200,
+            maxLife: 300,
+            speed: 0,
+            speedVariation: 1.5,
+            frequency: 50
+        });
+        this.emitter.name = 'smoke';
+        this.emitter.z = 4;
+        me.game.world.addChild(this.emitter);
+        me.game.world.addChild(this.emitter.container);
+        this.emitter.streamParticles();
+
 	},
 
 	update: function(dt){
@@ -144,17 +167,24 @@ game.PlayerEntity = me.Entity.extend({
 
 		//this.body.vel.normalize();
 		//this.body.vel.scale(this.body.accel * this.g_dt);
-
+        this.emitter.pos.x = this.pos.x + 16;
+        this.emitter.pos.y = this.pos.y + 16;
 		this.body.update(dt);
 
 		me.collision.check(this);
 
-		if (this.body.vel.x !== 0 || this.body.vel.y !== 0 ||this.stateChanged){
+        if(this.body.vel.x || this.body.vel.y != 0){
+            this.emitter.totalParticles = 200;
+        } else {
+            this.emitter.totalParticles = 0;
+        }
+
+		if (this.body.vel.x !== 0 || this.body.vel.y !== 0 || this.stateChanged){
             game.socket.emit('movePlayer', {x: this.pos.x, y: this.pos.y, direction: this.direction});
             this.stateChanged = false;
 		}
 		// return true if we moved or if the renderable was updated
-		if (this._super(me.Entity, 'update', [dt])){
+		if (this._super(me.Entity, 'update', [dt]) || this.body.vel.x !== 0 || this.body.vel.y !== 0 ){
 		    return true;
 		} else {
 		    return false;
@@ -205,6 +235,26 @@ game.NetworkPlayerEntity = me.Entity.extend({
 		this.animationToUseThisFrame = "moveright";
 		this.renderable.setCurrentAnimation('moveright');
 
+        var x = this.pos.x + 16;
+        var y = this.pos.y + 16;
+        var image = me.loader.getImage('smoke');
+        this.emitter = new me.ParticleEmitter(x, y, {
+            image: image,
+            totalParticles: 200,
+            angle: 0,
+            angleVariation: 0.3490658503988659,
+            minLife: 200,
+            maxLife: 300,
+            speed: 0,
+            speedVariation: 1.5,
+            frequency: 50
+        });
+        this.emitter.name = 'smoke';
+        this.emitter.z = 4;
+        me.game.world.addChild(this.emitter);
+        me.game.world.addChild(this.emitter.container);
+        this.emitter.streamParticles();
+
 
 
 	},
@@ -237,6 +287,9 @@ game.NetworkPlayerEntity = me.Entity.extend({
 		  this.lastAnimationUsed = this.animationToUseThisFrame;
 		  this.renderable.setCurrentAnimation(this.animationToUseThisFrame);
 		}
+
+        this.emitter.pos.x = this.pos.x + 16;
+        this.emitter.pos.y = this.pos.y + 16;
 
 		this.body.update(dt);
 

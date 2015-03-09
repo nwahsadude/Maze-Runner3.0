@@ -1,6 +1,6 @@
 game.PlayScreen = me.ScreenObject.extend({
 	onResetEvent: function () {
-		me.levelDirector.loadLevel("map002");
+		me.levelDirector.loadLevel("map003");
 
         this.HUD = new game.HUD.Container();
 

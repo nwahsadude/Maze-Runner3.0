@@ -22,7 +22,27 @@ game.Bullet = me.Entity.extend({
 		localTargetVector.scaleV(new me.Vector2d(this.maxVelocity, this.maxVelocity));
 		this.body.setVelocity(localTargetVector.x, localTargetVector.y);
 
-	},
+        var x = this.pos.x + 16;
+        var y = this.pos.y + 16;
+        var image = me.loader.getImage('smoke');
+        this.emitter = new me.ParticleEmitter(x, y, {
+            image: image,
+            totalParticles: 200,
+            angle: 0,
+            angleVariation: 0.3490658503988659,
+            minLife: 200,
+            maxLife: 300,
+            speed: 0,
+            speedVariation: 1.5,
+            frequency: 50
+        });
+        this.emitter.name = 'smoke';
+        this.emitter.z = 4;
+        me.game.world.addChild(this.emitter);
+        me.game.world.addChild(this.emitter.container);
+        this.emitter.streamParticles();
+
+    },
 
 	update: function(dt){
 		this.body.vel.x += this.body.accel.x * me.timer.tick;
@@ -34,9 +54,14 @@ game.Bullet = me.Entity.extend({
 			me.game.world.removeChild(this);
 		}
 
-		if (this.body.entity.pos.x <= 0 || this.body.entity.pos.y <= 0 || this.body.entity.pos.x >= 1280 || this.body.entity.pos.y >= 960){
+		if (this.body.entity.pos.x <= 0 || this.body.entity.pos.y <= 0 || this.body.entity.pos.x >= 1600 || this.body.entity.pos.y >= 1280){
+            me.game.world.removeChild(this.emitter);
+            me.game.world.removeChild(this.emitter.container);
 			me.game.world.removeChild(this);
 		}
+        this.emitter.pos.x = this.pos.x + 12;
+        this.emitter.pos.y = this.pos.y + 12;
+
 
 		this.body.update(dt);
 
@@ -54,11 +79,16 @@ game.Bullet = me.Entity.extend({
             switch(response.b.type){
                 case "networkPlayer":
                     this.body.setCollisionMask(me.collision.types.NO_OBJECT);
+                    me.game.world.removeChild(this.emitter);
+                    me.game.world.removeChild(this.emitter.container);
                     me.game.world.removeChild(this);
+                    game.hitPlayer(this.id, response.b.id);
                     return false;
 
                 default:
                     this.body.setCollisionMask(me.collision.types.NO_OBJECT);
+                    me.game.world.removeChild(this.emitter);
+                    me.game.world.removeChild(this.emitter.container);
                     me.game.world.removeChild(this);
                     return false;
             }
@@ -93,7 +123,25 @@ game.networkBullet = me.Entity.extend({
         localTargetVector.scaleV(new me.Vector2d(this.maxVelocity, this.maxVelocity));
         this.body.setVelocity(localTargetVector.x, localTargetVector.y);
 
-
+        var x = this.pos.x + 16;
+        var y = this.pos.y + 16;
+        var image = me.loader.getImage('smoke');
+        this.emitter = new me.ParticleEmitter(x, y, {
+            image: image,
+            totalParticles: 200,
+            angle: 0,
+            angleVariation: 0.3490658503988659,
+            minLife: 200,
+            maxLife: 300,
+            speed: 0,
+            speedVariation: 1.5,
+            frequency: 50
+        });
+        this.emitter.name = 'smoke';
+        this.emitter.z = 4;
+        me.game.world.addChild(this.emitter);
+        me.game.world.addChild(this.emitter.container);
+        this.emitter.streamParticles();
 
     },
 
@@ -106,14 +154,18 @@ game.networkBullet = me.Entity.extend({
             me.game.world.removeChild(this);
         }
 
-        if (this.body.entity.pos.x <= 0 || this.body.entity.pos.y <= 0 || this.body.entity.pos.x >= 1280 || this.body.entity.pos.y >= 960){
+        if (this.body.entity.pos.x <= 0 || this.body.entity.pos.y <= 0 || this.body.entity.pos.x >= 1600 || this.body.entity.pos.y >= 1280){
+            me.game.world.removeChild(this.emitter);
+            me.game.world.removeChild(this.emitter.container);
             me.game.world.removeChild(this);
         }
+
+        this.emitter.pos.x = this.pos.x + 12;
+        this.emitter.pos.y = this.pos.y + 12;
 
         this.body.update(dt);
 
         me.collision.check(this);
-
         this._super(me.Entity, 'update', [dt]);
         return true;
     },
@@ -133,23 +185,23 @@ game.networkBullet = me.Entity.extend({
             case "networkPlayer":
                 if(playerTemp.id != bulletId){
                     this.body.setCollisionMask(me.collision.types.NO_OBJECT);
+                    me.game.world.removeChild(this.emitter);
+                    me.game.world.removeChild(this.emitter.container);
                     me.game.world.removeChild(this);
                     return false;
                 }
                 return false;
             case "mainPlayer" :
                 this.body.setCollisionMask(me.collision.types.NO_OBJECT);
+                me.game.world.removeChild(this.emitter);
+                me.game.world.removeChild(this.emitter.container);
                 me.game.world.removeChild(this);
-                //playerTemp.pos.x = playerTemp.pos.x + response.overlapV.x;
-                //playerTemp.pos.y = playerTemp.pos.y + response.overlapV.y;
-                ////this.body.vel.y -= this.body.accel.y * me.timer.tick;
-                //playerTemp.body.accel = 0;
-                //this.updateBounds();
-                ////playerTemp.pos.sub(response.overlapV);
                 game.scoreHit(playerTemp.id, bulletId);
                 return false;
             default :
                 this.body.setCollisionMask(me.collision.types.NO_OBJECT);
+                me.game.world.removeChild(this.emitter);
+                me.game.world.removeChild(this.emitter.container);
                 me.game.world.removeChild(this);
                 return false;
         }

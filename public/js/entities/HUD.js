@@ -32,15 +32,15 @@ game.HUD.ScoreItem = me.Renderable.extend({
     },
 
     update: function(dt){
-        if (this.score !== game.data.score){
-            this.score = game.data.score;
+        if (this.score !== game.mainPlayer.score){
+            this.score = game.mainPlayer.score;
             return true;
         }
         return false;
     },
 
     draw: function(renderer){
-        this.font.draw(renderer, "SCORE: " + game.data.score, this.pos.x, this.pos.y);
+        this.font.draw(renderer, "SCORE: " + this.score, this.pos.x, this.pos.y);
     }
 });
 
@@ -55,15 +55,15 @@ game.HUD.HealthItem = me.Renderable.extend({
     },
 
     update: function(dt){
-        if (this.health !== game.data.health){
-            this.health = game.data.health;
+        if (this.health !== game.mainPlayer.health){
+            this.health = game.mainPlayer.health;
             return true;
         }
         return false
     },
 
     draw: function(renderer){
-        this.font.draw(renderer, "HEALTH: " + game.data.health, this.pos.x, this.pos.y);
+        this.font.draw(renderer, "HEALTH: " + this.health, this.pos.x, this.pos.y);
     }
 });
 

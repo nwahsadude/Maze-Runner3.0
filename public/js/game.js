@@ -47,6 +47,7 @@ game = {
         me.pool.register("enemyPlayer", game.NetworkPlayerEntity);
         me.pool.register("bullet", game.Bullet);
         me.pool.register("networkBullet", game.networkBullet);
+        me.pool.register("HealthItem", game.HealthEntity);
 
         me.input.bindKey(me.input.KEY.LEFT, 'left');
         me.input.bindKey(me.input.KEY.A, 'left');
@@ -62,6 +63,16 @@ game = {
         game.ready = true;
 
         me.state.change(me.state.PLAY);
+
+        var healthItem = me.pool.pull('HealthItem', 150, 150, {
+            image: 'health',
+            spritewidth: 32,
+            spriteheight: 32,
+            width: 32,
+            height: 32
+        });
+        console.log(healthItem);
+        me.game.world.addChild(healthItem, 8);
 
     },
 
@@ -94,8 +105,17 @@ game = {
         });
 
         this.players.push(this.mainPlayer);
-        me.game.world.addChild(this.mainPlayer, 4);
+        me.game.world.addChild(this.mainPlayer, 6);
         $('#individualScores').append('<li>' + this.mainPlayer.name + '</li>');
+        var healthItem = me.pool.pull('HealthItem', 200, 100, {
+            image: 'health',
+            spritewidth: 32,
+            spriteheight: 32,
+            width: 32,
+            height: 32
+        });
+        console.log(healthItem);
+        me.game.world.addChild(healthItem, 8);
     },
 
     'addEnemy': function (data) {
@@ -113,7 +133,7 @@ game = {
             name: data.name
         });
         this.players.push(player);
-        me.game.world.addChild(player, 4);
+        me.game.world.addChild(player, 8);
         $('#individualScores').append('<li id=' + "'" + player.name + "'" + '>' + player.name + '</li>');
     },
 
@@ -195,13 +215,13 @@ game = {
         }
 
         player.health--;
+        game.mainPlayer.score++;
         audioManager.playSound("shoot");
         if(sourceId === game.mainPlayer.id){
             if (player.health >= 0){
-                game.data.score++;
                 this.socket.emit('playerHit', {id: player.id, health: player.health});
             } else if (player.health < 0){
-                player.health = 10;
+                player.health = game.data.health;
                 //console.log(player.name + " has died!");
             }
         }
@@ -222,13 +242,13 @@ game = {
     },
 
     'scoreHit': function(sourceId, targetId){
-        game.data.health--;
+        game.mainPlayer.health--;
         var data;
         audioManager.playSound("shoot");
-        if (game.data.health < 0){
+        if (game.mainPlayer.health < 0){
             data = {id: game.mainPlayer.id, name: game.mainPlayer.name};
             me.game.world.removeChild(game.mainPlayer);
-            game.data.health = 10;
+            game.mainPlayer.health = game.data.health;
             game.respawnMainPlayer(data);
         }
     },
@@ -250,7 +270,7 @@ game = {
             id: data.id,
             name: data.name
         });
-        this.mainPlayer.health = 100;
+        this.mainPlayer.health = game.data.health;
         me.game.world.addChild(this.mainPlayer, 4);
         me.input.bindKey(me.input.KEY.SPACE, 'shoot');
         game.socket.emit('movePlayer', {x: this.mainPlayer.pos.x, y: this.mainPlayer.pos.y, direction: this.mainPlayer.direction});
