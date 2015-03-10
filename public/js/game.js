@@ -18,6 +18,8 @@ game = {
     'onload': function () {
         me.sys.pauseOnBlur = false;
         me.sys.fps = 60;
+        me.sys.preRender = true;
+
         if (!me.video.init("screen", me.video.CANVAS, 640, 480, true, 'auto')) {
             alert("Your browser does not support HTML5 canvas.");
             return;
@@ -71,14 +73,15 @@ game = {
             width: 32,
             height: 32
         });
-        console.log(healthItem);
+        //console.log(healthItem);
         me.game.world.addChild(healthItem, 8);
 
     },
 
     getSpawnPoint: function(){
-        data = {x: Math.floor(Math.random() * (300 - 60)) + 60, y: Math.floor(Math.random() * (300 - 60) + 60)};
-        return data;
+        var data = {x: Math.floor(Math.random() * (300 - 20)) + 20, y: Math.floor(Math.random() * (150 - 20) + 20)};
+        var data2 = {x: 1300, y: 810};
+        return data2;
     },
 
     getPlayerById: function (id) {
@@ -94,7 +97,8 @@ game = {
         if (!data) {
             return;
         }
-        this.mainPlayer = me.pool.pull('mainPlayer', 100, 100, {
+        var spawnPoint = game.getSpawnPoint();
+        this.mainPlayer = me.pool.pull('mainPlayer', spawnPoint.x, spawnPoint.y, {
             image: 'rockani',
             spritewidth: 32,
             spriteheight: 32,
@@ -114,7 +118,7 @@ game = {
             width: 32,
             height: 32
         });
-        console.log(healthItem);
+        //console.log(healthItem);
         me.game.world.addChild(healthItem, 8);
     },
 
@@ -147,6 +151,13 @@ game = {
             console.log("Player was not found");
             return;
         }
+        if(!data.moving){
+            movePlayer.emitter.totalParticles = 0;
+            //console.log(movePlayer.pos.x, data.x);
+        } else if(data.moving){
+            //console.log(movePlayer.pos.x, data.x);
+            movePlayer.emitter.totalParticles = 200;
+        }
 
         movePlayer.pos.x = data.x;
         movePlayer.pos.y = data.y;
@@ -159,6 +170,9 @@ game = {
             return;
         }
         var removePlayer = game.getPlayerById(data.id);
+
+        me.game.world.removeChild(removePlayer.emitter);
+        me.game.world.removeChild(removePlayer.emitter.container);
 
         if (!removePlayer) {
             console.log("Player was not found");
@@ -271,7 +285,7 @@ game = {
             name: data.name
         });
         this.mainPlayer.health = game.data.health;
-        me.game.world.addChild(this.mainPlayer, 4);
+        me.game.world.addChild(this.mainPlayer, 6);
         me.input.bindKey(me.input.KEY.SPACE, 'shoot');
         game.socket.emit('movePlayer', {x: this.mainPlayer.pos.x, y: this.mainPlayer.pos.y, direction: this.mainPlayer.direction});
     }

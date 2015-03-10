@@ -10,6 +10,9 @@ game.PlayerEntity = me.Entity.extend({
         this.health = 10;
         this.score = 0;
 
+        this.moving = false;
+        this.runonce = false;
+
 		this.body.gravity = 0;
 		//this.type = game.MAIN_PLAYER_OBJECT;
 		this.type = "mainPlayer";
@@ -66,7 +69,7 @@ game.PlayerEntity = me.Entity.extend({
             frequency: 50
         });
         this.emitter.name = 'smoke';
-        this.emitter.z = 4;
+        this.emitter.z = 5;
         me.game.world.addChild(this.emitter);
         me.game.world.addChild(this.emitter.container);
         this.emitter.streamParticles();
@@ -175,12 +178,20 @@ game.PlayerEntity = me.Entity.extend({
 
         if(this.body.vel.x || this.body.vel.y != 0){
             this.emitter.totalParticles = 200;
+            this.runonce = false;
+            this.moving = true;
         } else {
             this.emitter.totalParticles = 0;
+            this.moving = false;
         }
 
+
+        if(!this.moving && !this.runonce){
+            game.socket.emit('movePlayer', {x: this.pos.x, y: this.pos.y, direction: this.direction, moving: this.moving});
+            this.runonce = true;
+        }
 		if (this.body.vel.x !== 0 || this.body.vel.y !== 0 || this.stateChanged){
-            game.socket.emit('movePlayer', {x: this.pos.x, y: this.pos.y, direction: this.direction});
+            game.socket.emit('movePlayer', {x: this.pos.x, y: this.pos.y, direction: this.direction, moving: this.moving});
             this.stateChanged = false;
 		}
 		// return true if we moved or if the renderable was updated
@@ -208,7 +219,7 @@ game.NetworkPlayerEntity = me.Entity.extend({
 		this.id = settings.id;
 		this.name = settings.name;
 
-        this.health = 3;
+        this.health = 10;
 
 		this.body.gravity = 0;
 		this.type = "networkPlayer";
@@ -240,7 +251,7 @@ game.NetworkPlayerEntity = me.Entity.extend({
         var image = me.loader.getImage('smoke');
         this.emitter = new me.ParticleEmitter(x, y, {
             image: image,
-            totalParticles: 200,
+            totalParticles: 0,
             angle: 0,
             angleVariation: 0.3490658503988659,
             minLife: 200,
@@ -250,13 +261,12 @@ game.NetworkPlayerEntity = me.Entity.extend({
             frequency: 50
         });
         this.emitter.name = 'smoke';
-        this.emitter.z = 4;
+        this.emitter.z = 5;
         me.game.world.addChild(this.emitter);
         me.game.world.addChild(this.emitter.container);
         this.emitter.streamParticles();
 
-
-
+        this.font = new me.BitmapFont("32x32_font", 32);
 	},
 
 	update: function(dt){
@@ -288,6 +298,7 @@ game.NetworkPlayerEntity = me.Entity.extend({
 		  this.renderable.setCurrentAnimation(this.animationToUseThisFrame);
 		}
 
+
         this.emitter.pos.x = this.pos.x + 16;
         this.emitter.pos.y = this.pos.y + 16;
 
@@ -300,5 +311,10 @@ game.NetworkPlayerEntity = me.Entity.extend({
 	onCollision: function(response, other){
 		// Make all other objects solid
 		return false;
-	}
+	},
+
+    draw: function(renderer){
+        this._super(me.Entity, 'draw', [renderer]);
+        this.font.draw(renderer, this.health, this.pos.x + 16, this.pos.y - 32);
+    }
 });

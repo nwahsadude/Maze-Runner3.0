@@ -22,6 +22,7 @@ game.Bullet = me.Entity.extend({
 		localTargetVector.scaleV(new me.Vector2d(this.maxVelocity, this.maxVelocity));
 		this.body.setVelocity(localTargetVector.x, localTargetVector.y);
 
+
         var x = this.pos.x + 16;
         var y = this.pos.y + 16;
         var image = me.loader.getImage('smoke');
@@ -37,7 +38,7 @@ game.Bullet = me.Entity.extend({
             frequency: 50
         });
         this.emitter.name = 'smoke';
-        this.emitter.z = 4;
+        this.emitter.z = 6 ;
         me.game.world.addChild(this.emitter);
         me.game.world.addChild(this.emitter.container);
         this.emitter.streamParticles();
@@ -138,7 +139,7 @@ game.networkBullet = me.Entity.extend({
             frequency: 50
         });
         this.emitter.name = 'smoke';
-        this.emitter.z = 4;
+        this.emitter.z = 6;
         me.game.world.addChild(this.emitter);
         me.game.world.addChild(this.emitter.container);
         this.emitter.streamParticles();

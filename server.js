@@ -99,7 +99,7 @@ io.sockets.on('connection', function(socket){
 		movePlayer.setY(data.y);
 		movePlayer.setDirection(data.direction);
 
-		this.broadcast.emit('movePlayer', {id: movePlayer.id, x: movePlayer.getX(), y: movePlayer.getY(), direction: movePlayer.getDirection()});
+		this.broadcast.emit('movePlayer', {id: movePlayer.id, x: movePlayer.getX(), y: movePlayer.getY(), direction: movePlayer.getDirection(), moving: data.moving});
 	});
 
 	socket.on('fireProjectile', function(id, source, target){

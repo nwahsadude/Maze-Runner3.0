@@ -2,6 +2,7 @@
  * Created by Shawn on 3/5/2015.
  */
 game.HUD = game.HUD || {};
+//game.ENEMYHUD = game.HUD || {};
 
 game.HUD.Container = me.Container.extend({
     init: function(){
@@ -89,3 +90,18 @@ game.HUD.DeathItem = me.Renderable.extend({
         this.font.draw(renderer, "DEATHS: " + game.data.death, this.pos.x, this.pos.y);
     }
 });
+
+//game.ENEMYHUDHUD.Container = me.Container.extend({
+//    init: function(){
+//        this._super(me.Container, 'init');
+//
+//        this.isPersistent = true;
+//
+//
+//        this.z = Infinity;
+//
+//        this.name = "HUD";
+//
+//        this.addChild(new game.HUD.EnemyHealth(630, 440));
+//    }
+//});
