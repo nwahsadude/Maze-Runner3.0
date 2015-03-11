@@ -31,11 +31,13 @@ game.Bullet = me.Entity.extend({
             totalParticles: 200,
             angle: 0,
             angleVariation: 0.3490658503988659,
-            minLife: 200,
-            maxLife: 300,
+            minLife: 50,
+            maxLife: 100,
             speed: 0,
             speedVariation: 1.5,
-            frequency: 50
+            frequency: 50,
+            onlyInViewport: true
+
         });
         this.emitter.name = 'smoke';
         this.emitter.z = 6 ;

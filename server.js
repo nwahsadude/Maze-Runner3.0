@@ -114,9 +114,19 @@ io.sockets.on('connection', function(socket){
 
 	});
 
-	socket.on('resetPlayer', function(){
+	socket.on('resetPlayer', function(data){
+        var resetPlayer = playerById(this.id);
+
+        if(!resetPlayer){
+            console.log("Move Player: Player not found: " + this.id);
+            return;
+        }
+
+        this.broadcast.emit('resetPlayer', data);
 
 	});
+
+
 
 });
 

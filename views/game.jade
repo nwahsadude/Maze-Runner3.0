@@ -124,6 +124,10 @@ html
             socket.on('remotePlayerHit', function (data) {
                 game.remotePlayerHealthChanged(data);
             });
+
+            socket.on('resetPlayer', function(data){
+                game.resetPlayer(data);
+            });
         });
 
 

@@ -231,10 +231,14 @@ game = {
         player.health--;
         game.mainPlayer.score++;
         audioManager.playSound("shoot");
+        if (player.id === game.mainPlayer.id) {
+            console.log("running");
+        }
         if(sourceId === game.mainPlayer.id){
-            if (player.health >= 0){
+            if (player.health > 0){
                 this.socket.emit('playerHit', {id: player.id, health: player.health});
-            } else if (player.health < 0){
+            } else if (player.health <= 0){
+                this.socket.emit('playerHit', {id: player.id, health: player.health});
                 player.health = game.data.health;
                 //console.log(player.name + " has died!");
             }
@@ -256,14 +260,22 @@ game = {
     },
 
     'scoreHit': function(sourceId, targetId){
+        console.log("hit");
         game.mainPlayer.health--;
+        this.socket.emit('playerHit', {id: game.mainPlayer.id, health: game.mainPlayer.health});
         var data;
         audioManager.playSound("shoot");
-        if (game.mainPlayer.health < 0){
+        if (game.mainPlayer.health <= 0){
             data = {id: game.mainPlayer.id, name: game.mainPlayer.name};
-            me.game.world.removeChild(game.mainPlayer);
             game.mainPlayer.health = game.data.health;
+            this.socket.emit('playerHit', {id: game.mainPlayer.id, health: game.mainPlayer.health});
+            me.game.world.addChild(this.mainPlayer.emitter);
+            me.game.world.addChild(this.mainPlayer.emitter.container);
+            me.game.world.removeChild(game.mainPlayer);
             game.respawnMainPlayer(data);
+            console.log(sourceId);
+            game.socket.emit('resetPlayer');
+
         }
     },
 
@@ -273,7 +285,7 @@ game = {
         }
         me.input.unbindKey(me.input.KEY.SPACE, 'shoot');
         game.data.death++;
-        audioManager.playSound("respawn");
+        //audioManager.playSound("respawn");
         var spawnPoint = game.getSpawnPoint();
         this.mainPlayer = me.pool.pull('mainPlayer', spawnPoint.x, spawnPoint.y, {
             image: 'rockani',
@@ -288,6 +300,10 @@ game = {
         me.game.world.addChild(this.mainPlayer, 6);
         me.input.bindKey(me.input.KEY.SPACE, 'shoot');
         game.socket.emit('movePlayer', {x: this.mainPlayer.pos.x, y: this.mainPlayer.pos.y, direction: this.mainPlayer.direction});
+    },
+
+    'resetPlayer': function(data){
+        audioManager.playSound("respawn");
     }
 
 

@@ -59,7 +59,7 @@ game.PlayerEntity = me.Entity.extend({
         var image = me.loader.getImage('smoke');
         this.emitter = new me.ParticleEmitter(x, y, {
             image: image,
-            totalParticles: 200,
+            totalParticles: 1,
             angle: 0,
             angleVariation: 0.3490658503988659,
             minLife: 200,
@@ -218,6 +218,7 @@ game.NetworkPlayerEntity = me.Entity.extend({
 		this.body.addShape(new me.Rect(0, 0, 32, 32));
 		this.id = settings.id;
 		this.name = settings.name;
+        this.alwaysUpdate = true;
 
         this.health = 10;
 
