@@ -153,9 +153,7 @@ game = {
         }
         if(!data.moving){
             movePlayer.emitter.totalParticles = 0;
-            //console.log(movePlayer.pos.x, data.x);
         } else if(data.moving){
-            //console.log(movePlayer.pos.x, data.x);
             movePlayer.emitter.totalParticles = 200;
         }
 
@@ -231,15 +229,14 @@ game = {
         player.health--;
         game.mainPlayer.score++;
         audioManager.playSound("shoot");
-        if (player.id === game.mainPlayer.id) {
-            console.log("running");
-        }
+
+
         if(sourceId === game.mainPlayer.id){
             if (player.health > 0){
                 this.socket.emit('playerHit', {id: player.id, health: player.health});
             } else if (player.health <= 0){
-                this.socket.emit('playerHit', {id: player.id, health: player.health});
                 player.health = game.data.health;
+                this.socket.emit('playerHit', {id: player.id, health: player.health});
                 //console.log(player.name + " has died!");
             }
         }
@@ -260,11 +257,9 @@ game = {
     },
 
     'scoreHit': function(sourceId, targetId){
-        console.log("hit");
-        game.mainPlayer.health--;
-        this.socket.emit('playerHit', {id: game.mainPlayer.id, health: game.mainPlayer.health});
-        var data;
         audioManager.playSound("shoot");
+        game.mainPlayer.health--;
+        var data;
         if (game.mainPlayer.health <= 0){
             data = {id: game.mainPlayer.id, name: game.mainPlayer.name};
             game.mainPlayer.health = game.data.health;
@@ -273,9 +268,9 @@ game = {
             me.game.world.addChild(this.mainPlayer.emitter.container);
             me.game.world.removeChild(game.mainPlayer);
             game.respawnMainPlayer(data);
-            console.log(sourceId);
             game.socket.emit('resetPlayer');
-
+        } else {
+            //this.socket.emit('playerHit', {id: game.mainPlayer.id, health: game.mainPlayer.health});
         }
     },
 
