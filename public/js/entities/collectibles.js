@@ -48,7 +48,5 @@ game.HealthEntity = me.Entity.extend({
     respawn: function(response){
         this.body.setCollisionMask(4294967295);
         this.renderable.alpha = 1;
-        game.reenableHealthEntity(response.b.id);
-
     }
 });

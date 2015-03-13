@@ -318,29 +318,17 @@ game = {
         this.socket.emit('removeHealthEntity', {id: data})
     },
 
-    'reenableHealthEntity': function(data){
-
-        this.socket.emit('enableHealthEntity', {id: data})
-    },
-
     'disableHealthEntity': function(data){
-        var disableHE = game.getEntityById(data.id)
+        var disableHE = game.getEntityById(data.id);
 
         if(!disableHE){return;}
         disableHE.body.setCollisionMask(me.collision.types.NO_OBJECT);
         disableHE.renderable.alpha = 0.0;
-
-    },
-
-    'enableHealthEntity': function(data){
-        var enableHE = game.getEntityById(data.id)
-
-        if(!enableHE){return;}
-        console.log(enableHE);
-        enableHE.body.setCollisionMask(4294967295);
-        enableHE.renderable.alpha = 1;
+        setTimeout(function() {
+            disableHE.body.setCollisionMask(4294967295);
+            disableHE.renderable.alpha = 1.0;
+        }, game.data.healthCooldown);
 
     }
-
 
 };

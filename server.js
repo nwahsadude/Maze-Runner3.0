@@ -165,18 +165,6 @@ io.sockets.on('connection', function(socket){
         this.broadcast.emit('removeHealthEntity', healthPack);
     });
 
-    socket.on('enableHealthEntity', function(data){
-        var healthPack = entityById(data.id);
-
-        if(!healthPack){
-            console.log("enableHealthEntity: Entity not found: " + data.id);
-            return;
-        }
-
-        this.broadcast.emit('enableHealthEntity', healthPack);
-    });
-
-
 
 });
 
