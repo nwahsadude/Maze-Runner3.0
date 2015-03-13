@@ -5,7 +5,8 @@ var http = require('http'),
 	express = require('express'),
 	app = express(),
 	socketio = require('socket.io'),
-	Player = require('./Player').Player;
+	Player = require('./Player').Player,
+    HealthEntity = require('./Entities').HealthEntity;
 
 app.set('port', port);
 app.set('views', __dirname + '/views');
@@ -22,11 +23,15 @@ app.get('/game', function(req, res){
 
 var server = http.createServer(app),
 	io = socketio.listen(server);
-var	players;
+var	players,
+    healthEntities,
+    healthEntitiesAmount = 2;
 
 function init(){
 	players = [];
+    healthEntities = [];
 	highScores = {};
+    HEP();
 }
 
 function playerById(id){
@@ -36,6 +41,25 @@ function playerById(id){
 		}
 	}
 	return false;
+}
+
+//TODO change this proper entity search
+function entityById(id){
+	for (var i = 0; i < healthEntities.length; i++){
+		if (healthEntities[i].id === id){
+			return healthEntities[i];
+		}
+	}
+	return false;
+}
+
+function HEP() {
+    var healthEntityPos = [{x: 1300, y: 750}, {x: 1350, y: 750}];
+
+    for(var i = 0; i < healthEntitiesAmount; i++){
+        var newHealthEntity = new HealthEntity(healthEntityPos[i]);
+        healthEntities.push(newHealthEntity);
+    }
 }
 
 io.sockets.on('connection', function(socket){
@@ -60,6 +84,8 @@ io.sockets.on('connection', function(socket){
 	socket.on('gameReady', function(data){
 		var newPlayer = new Player(this.id, data.name, data.room, 100, 100, "down");
 
+        this.emit('addHealthEntity', healthEntities);
+
 		if(playerById(this.id)){
 			return;
 		}
@@ -83,6 +109,8 @@ io.sockets.on('connection', function(socket){
 		}
 
 		players.push(newPlayer);
+
+
 
 	});
 
@@ -125,6 +153,28 @@ io.sockets.on('connection', function(socket){
         this.broadcast.emit('resetPlayer', data);
 
 	});
+
+    socket.on('removeHealthEntity', function(data){
+        var healthPack = entityById(data.id);
+
+        if(!healthPack){
+            console.log("removeHealthEntity: Entity not found: " + data.id);
+            return;
+        }
+
+        this.broadcast.emit('removeHealthEntity', healthPack);
+    });
+
+    socket.on('enableHealthEntity', function(data){
+        var healthPack = entityById(data.id);
+
+        if(!healthPack){
+            console.log("enableHealthEntity: Entity not found: " + data.id);
+            return;
+        }
+
+        this.broadcast.emit('enableHealthEntity', healthPack);
+    });
 
 
 

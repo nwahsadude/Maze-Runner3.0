@@ -4,10 +4,12 @@ game = {
         score: 0,
         health: 10,
         volume: 1,
-        death: 0
+        death: 0, //TODO add this to the player
+        healthCooldown: 3000
     },
     playerId: '',
     players: [],
+    healthEntity: [],
     mouseTarget: {},
     MAIN_PLAYER_OBJECT: 4,
     ENEMY_OBJECT: 5,
@@ -49,7 +51,7 @@ game = {
         me.pool.register("enemyPlayer", game.NetworkPlayerEntity);
         me.pool.register("bullet", game.Bullet);
         me.pool.register("networkBullet", game.networkBullet);
-        me.pool.register("HealthItem", game.HealthEntity);
+        me.pool.register("HealthEntity", game.HealthEntity);
 
         me.input.bindKey(me.input.KEY.LEFT, 'left');
         me.input.bindKey(me.input.KEY.A, 'left');
@@ -66,16 +68,6 @@ game = {
 
         me.state.change(me.state.PLAY);
 
-        var healthItem = me.pool.pull('HealthItem', 150, 150, {
-            image: 'health',
-            spritewidth: 32,
-            spriteheight: 32,
-            width: 32,
-            height: 32
-        });
-        //console.log(healthItem);
-        me.game.world.addChild(healthItem, 8);
-
     },
 
     getSpawnPoint: function(){
@@ -88,6 +80,15 @@ game = {
         for (var i = 0; i < this.players.length; i++) {
             if (this.players[i].id === id) {
                 return this.players[i];
+            }
+        }
+        return false;
+    },
+
+    getEntityById: function(id){
+        for (var i = 0; i < this.healthEntity.length; i++) {
+            if (this.healthEntity[i].id === id) {
+                return this.healthEntity[i];
             }
         }
         return false;
@@ -111,15 +112,6 @@ game = {
         this.players.push(this.mainPlayer);
         me.game.world.addChild(this.mainPlayer, 6);
         $('#individualScores').append('<li>' + this.mainPlayer.name + '</li>');
-        var healthItem = me.pool.pull('HealthItem', 200, 100, {
-            image: 'health',
-            spritewidth: 32,
-            spriteheight: 32,
-            width: 32,
-            height: 32
-        });
-        //console.log(healthItem);
-        me.game.world.addChild(healthItem, 8);
     },
 
     'addEnemy': function (data) {
@@ -299,6 +291,55 @@ game = {
 
     'resetPlayer': function(data){
         audioManager.playSound("respawn");
+    },
+
+    'updatePlayerHealth': function(data){
+        this.socket.emit('playerHit', {id: data.id, health: data.health});
+    },
+
+    'addHealthEntity': function(data){
+        if(!data){return;}
+        for(var i = 0; i < data.length; i++){
+            var obj = me.pool.pull('HealthEntity', data[i].pos.x, data[i].pos.y, {
+                image: 'health',
+                spritewidth: 32,
+                spriteheight: 32,
+                width: 32,
+                height: 32,
+                id: data[i].id
+            });
+            me.game.world.addChild(obj, 10);
+            game.healthEntity.push(obj);
+        }
+    },
+
+    'removeHealthEntity': function(data){
+
+        this.socket.emit('removeHealthEntity', {id: data})
+    },
+
+    'reenableHealthEntity': function(data){
+
+        this.socket.emit('enableHealthEntity', {id: data})
+    },
+
+    'disableHealthEntity': function(data){
+        var disableHE = game.getEntityById(data.id)
+
+        if(!disableHE){return;}
+        disableHE.body.setCollisionMask(me.collision.types.NO_OBJECT);
+        disableHE.renderable.alpha = 0.0;
+
+    },
+
+    'enableHealthEntity': function(data){
+        var enableHE = game.getEntityById(data.id)
+
+        if(!enableHE){return;}
+        console.log(enableHE);
+        enableHE.body.setCollisionMask(4294967295);
+        enableHE.renderable.alpha = 1;
+
     }
 
 

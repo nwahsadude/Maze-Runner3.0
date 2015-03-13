@@ -102,6 +102,10 @@ html
                 game.addEnemy(data);
             });
 
+            socket.on('addHealthEntity', function(data){
+                game.addHealthEntity(data);
+            });
+
             socket.on('addMainPlayer', function (data) {
                 game.addMainPlayer(data);
             });
@@ -125,8 +129,16 @@ html
                 game.remotePlayerHealthChanged(data);
             });
 
-            socket.on('resetPlayer', function(data){
+            socket.on('resetPlayer', function (data) {
                 game.resetPlayer(data);
+            });
+
+            socket.on('removeHealthEntity', function (data) {
+                game.disableHealthEntity(data);
+            });
+
+            socket.on('enableHealthEntity', function (data){
+               game.enableHealthEntity(data);
             });
         });
 
