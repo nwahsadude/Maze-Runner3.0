@@ -21,6 +21,9 @@ game.HealthEntity = me.Entity.extend({
 
     onCollision: function(response){
         if(!this.isHealthCoolDown){
+            if(game.mainPlayer.health === game.data.health){
+                return false;
+            }
             this.body.setCollisionMask(me.collision.types.NO_OBJECT);
             this.renderable.alpha = 0.0;
             this.isHealthCoolDown = true;
@@ -33,7 +36,6 @@ game.HealthEntity = me.Entity.extend({
                     game.mainPlayer.health += 2;
                     game.updatePlayerHealth({id: game.mainPlayer.id, health: game.mainPlayer.health});
                 }
-                console.log(game.mainPlayer.health);
             }
             var that = this;
 

@@ -8,6 +8,7 @@ game.PlayScreen = me.ScreenObject.extend({
 
 		game.gameReady();
         audioManager.init();
+        particleManager.init();
 	},
 
     onDestroyEvent: function(){

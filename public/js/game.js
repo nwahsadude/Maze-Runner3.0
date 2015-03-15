@@ -18,8 +18,8 @@ game = {
 
 
     'onload': function () {
-        me.sys.pauseOnBlur = false;
-        me.sys.fps = 60;
+        //me.sys.pauseOnBlur = false;
+        me.sys.fps = 30;
         me.sys.preRender = true;
 
         if (!me.video.init("screen", me.video.CANVAS, 640, 480, true, 'auto')) {
@@ -106,11 +106,12 @@ game = {
             width: 32,
             height: 32,
             id: data.id,
-            name: data.name
+            name: data.name,
+            score: 0
         });
 
         this.players.push(this.mainPlayer);
-        me.game.world.addChild(this.mainPlayer, 6);
+        me.game.world.addChild(this.mainPlayer, 4);
         $('#individualScores').append('<li>' + this.mainPlayer.name + '</li>');
     },
 
@@ -129,8 +130,8 @@ game = {
             name: data.name
         });
         this.players.push(player);
-        me.game.world.addChild(player, 8);
-        $('#individualScores').append('<li id=' + "'" + player.name + "'" + '>' + player.name + '</li>');
+        me.game.world.addChild(player, 4);
+        $('#individualScores').append('<li id=' + player.name + ">" + player.name + '</li>');
     },
 
     'movePlayer': function (data) {
@@ -146,7 +147,9 @@ game = {
         if(!data.moving){
             movePlayer.emitter.totalParticles = 0;
         } else if(data.moving){
-            movePlayer.emitter.totalParticles = 200;
+            if(particleManager.enableParticles){
+                movePlayer.emitter.totalParticles = 10;
+            }
         }
 
         movePlayer.pos.x = data.x;
@@ -155,7 +158,6 @@ game = {
     },
 
     'removeEnemy': function (data) {
-        // $('#'+"'"+ data.name +"'" + 'd').remove();
         if (!data) {
             return;
         }
@@ -168,6 +170,7 @@ game = {
             console.log("Player was not found");
             return;
         }
+        $("#" + removePlayer.name).remove();
         me.game.world.removeChild(removePlayer);
     },
 
@@ -183,7 +186,7 @@ game = {
             id: id
         });
 
-        me.game.world.addChild(obj, 6);
+        me.game.world.addChild(obj, 3);
         //audioManager.playSound("shoot");
 
         if (broadcast) {
@@ -203,7 +206,7 @@ game = {
             id: id
         });
 
-        me.game.world.addChild(obj, 6);
+        me.game.world.addChild(obj, 3);
         //audioManager.playSound("shoot");
     },
 
@@ -253,7 +256,7 @@ game = {
         game.mainPlayer.health--;
         var data;
         if (game.mainPlayer.health <= 0){
-            data = {id: game.mainPlayer.id, name: game.mainPlayer.name};
+            data = {id: game.mainPlayer.id, name: game.mainPlayer.name, score: game.mainPlayer.score};
             game.mainPlayer.health = game.data.health;
             this.socket.emit('playerHit', {id: game.mainPlayer.id, health: game.mainPlayer.health});
             me.game.world.addChild(this.mainPlayer.emitter);
@@ -281,10 +284,11 @@ game = {
             width: 32,
             height: 32,
             id: data.id,
-            name: data.name
+            name: data.name,
+            score: data.score
         });
         this.mainPlayer.health = game.data.health;
-        me.game.world.addChild(this.mainPlayer, 6);
+        me.game.world.addChild(this.mainPlayer, 3);
         me.input.bindKey(me.input.KEY.SPACE, 'shoot');
         game.socket.emit('movePlayer', {x: this.mainPlayer.pos.x, y: this.mainPlayer.pos.y, direction: this.mainPlayer.direction});
     },
@@ -308,13 +312,12 @@ game = {
                 height: 32,
                 id: data[i].id
             });
-            me.game.world.addChild(obj, 10);
+            me.game.world.addChild(obj, 4);
             game.healthEntity.push(obj);
         }
     },
 
     'removeHealthEntity': function(data){
-
         this.socket.emit('removeHealthEntity', {id: data})
     },
 
@@ -329,6 +332,30 @@ game = {
             disableHE.renderable.alpha = 1.0;
         }, game.data.healthCooldown);
 
+    },
+
+    'gameManager': function(){
+        var particleSystem = {
+            init: function(){
+                particleSystem.particles(true);
+
+            },
+
+            particles: function(enabled){
+                if(endabled){
+
+                    //Do stuff
+                } else if(!enabled){
+                    //Stop doing stuff
+                }
+            },
+
+            switchParticles: function(){
+                if(particleSystem.particles()){
+
+                }
+            }
+        }
     }
 
 };
