@@ -41,8 +41,8 @@ game.Bullet = me.Entity.extend({
         //});
 
         this.emitter = particleManager.bulletParticles(x, y);
-        this.emitter.name = 'smoke';
-        this.emitter.z = 3 ;
+        //this.emitter.name = 'smoke';
+        //this.emitter.z = 3 ;
         me.game.world.addChild(this.emitter);
         me.game.world.addChild(this.emitter.container);
         //this.emitter.streamParticles();
@@ -96,6 +96,13 @@ game.Bullet = me.Entity.extend({
                 default:
                     this.emitter.burstParticles();
                     this.body.setCollisionMask(me.collision.types.NO_OBJECT);
+                    //TODO Remove the particle emitter in a better way
+                    var that = this;
+                    this.removeParticleEmitter(that);
+                    //setTimeout(function() {
+                    //    me.game.world.removeChild(that.emitter);
+                    //    me.game.world.removeChild(that.emitter.container);
+                    //}, 3000);
                     //me.game.world.removeChild(this.emitter);
                     //me.game.world.removeChild(this.emitter.container);
                     me.game.world.removeChild(this);
@@ -104,7 +111,14 @@ game.Bullet = me.Entity.extend({
         }
 
 		return true;
-	}
+	},
+
+    removeParticleEmitter: function(emitter){
+        setTimeout(function() {
+            me.game.world.removeChild(emitter.emitter);
+            me.game.world.removeChild(emitter.emitter.container);
+        }, 3000);
+    }
 });
 
 game.networkBullet = me.Entity.extend({
@@ -134,24 +148,13 @@ game.networkBullet = me.Entity.extend({
 
         var x = this.pos.x + 16;
         var y = this.pos.y + 16;
-        //var image = me.loader.getImage('smoke');
-        //this.emitter = new me.ParticleEmitter(x, y, {
-        //    image: image,
-        //    totalParticles: 200,
-        //    angle: 0,
-        //    angleVariation: 0.3490658503988659,
-        //    minLife: 200,
-        //    maxLife: 300,
-        //    speed: 0,
-        //    speedVariation: 1.5,
-        //    frequency: 50
-        //});
+
         this.emitter = particleManager.bulletParticles(x, y)
-        this.emitter.name = 'smoke';
-        this.emitter.z = 3;
+        //this.emitter.name = 'smoke';
+        //this.emitter.z = 3;
+
         me.game.world.addChild(this.emitter);
         me.game.world.addChild(this.emitter.container);
-        //this.emitter.streamParticles();
 
     },
 
@@ -165,8 +168,7 @@ game.networkBullet = me.Entity.extend({
         }
 
         if (this.body.entity.pos.x <= 0 || this.body.entity.pos.y <= 0 || this.body.entity.pos.x >= 1600 || this.body.entity.pos.y >= 1280){
-            //me.game.world.removeChild(this.emitter);
-            //me.game.world.removeChild(this.emitter.container);
+            this.removeParticleEmitter(this);
             me.game.world.removeChild(this);
         }
 
@@ -190,14 +192,13 @@ game.networkBullet = me.Entity.extend({
             playerTemp = response.a;
             bulletId = response.b.id;
         }
-
+        var that = this;
         switch(playerTemp.type){
             case "networkPlayer":
                 if(playerTemp.id != bulletId){
                     this.emitter.burstParticles();
                     this.body.setCollisionMask(me.collision.types.NO_OBJECT);
-                    //me.game.world.removeChild(this.emitter);
-                    //me.game.world.removeChild(this.emitter.container);
+                    this.removeParticleEmitter(that);
                     me.game.world.removeChild(this);
                     return false;
                 }
@@ -205,20 +206,25 @@ game.networkBullet = me.Entity.extend({
             case "mainPlayer" :
                 this.emitter.burstParticles();
                 this.body.setCollisionMask(me.collision.types.NO_OBJECT);
-                //me.game.world.removeChild(this.emitter);
-                //me.game.world.removeChild(this.emitter.container);
+                this.removeParticleEmitter(that);
                 me.game.world.removeChild(this);
                 game.scoreHit(playerTemp.id, bulletId);
                 return false;
             default :
                 this.emitter.burstParticles();
                 this.body.setCollisionMask(me.collision.types.NO_OBJECT);
-                //me.game.world.removeChild(this.emitter);
-                //me.game.world.removeChild(this.emitter.container);
+                this.removeParticleEmitter(that);
                 me.game.world.removeChild(this);
                 return false;
         }
         //Make all other objects solid
         return true;
+    },
+
+    removeParticleEmitter: function(emitter){
+        setTimeout(function() {
+            me.game.world.removeChild(emitter.emitter);
+            me.game.world.removeChild(emitter.emitter.container);
+        }, 3000);
     }
 });

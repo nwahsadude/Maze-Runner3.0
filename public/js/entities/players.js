@@ -58,20 +58,9 @@ game.PlayerEntity = me.Entity.extend({
         var x = this.pos.x + 16;
         var y = this.pos.y + 16;
 
-        //this.emitter = new me.ParticleEmitter(x, y, {
-        //    image: image,
-        //    totalParticles: 1,
-        //    angle: 0,
-        //    angleVariation: 0.3490658503988659,
-        //    minLife: 200,
-        //    maxLife: 300,
-        //    speed: 0,
-        //    speedVariation: 1.5,
-        //    frequency: 50
-        //});
         this.emitter = particleManager.playerParticles(x, y);
-        this.emitter.name = 'smoke';
-        this.emitter.z = 4;
+        //this.emitter.name = 'smoke';
+        //this.emitter.z = 4;
         me.game.world.addChild(this.emitter);
         me.game.world.addChild(this.emitter.container);
         this.emitter.streamParticles();
@@ -176,6 +165,7 @@ game.PlayerEntity = me.Entity.extend({
         }
 		//this.body.vel.normalize();
 		//this.body.vel.scale(this.body.accel * this.g_dt);
+
         this.emitter.pos.x = this.pos.x + 16;
         this.emitter.pos.y = this.pos.y + 16;
 
@@ -271,8 +261,8 @@ game.NetworkPlayerEntity = me.Entity.extend({
         //    frequency: 50
         //});
         this.emitter = particleManager.playerParticles(x, y);
-        this.emitter.name = 'smoke';
-        this.emitter.z = 3;
+        //this.emitter.name = 'smoke';
+        //this.emitter.z = 3;
         me.game.world.addChild(this.emitter);
         me.game.world.addChild(this.emitter.container);
         this.emitter.streamParticles();

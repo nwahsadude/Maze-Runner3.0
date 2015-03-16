@@ -19,7 +19,7 @@ game = {
 
     'onload': function () {
         //me.sys.pauseOnBlur = false;
-        me.sys.fps = 30;
+        me.sys.fps = 60;
         me.sys.preRender = true;
 
         if (!me.video.init("screen", me.video.CANVAS, 640, 480, true, 'auto')) {
