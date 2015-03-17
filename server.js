@@ -26,7 +26,7 @@ var server = http.createServer(app),
 	io = socketio.listen(server);
 var	players,
     healthEntities,
-    healthEntitiesAmount = 2;
+    healthEntitiesAmount = 6;
 
 function init(){
 	players = [];
@@ -55,7 +55,13 @@ function entityById(id){
 }
 
 function HEP() {
-    var healthEntityPos = [{x: 1300, y: 750}, {x: 1350, y: 750}];
+    var healthEntityPos = [
+        {x: 580, y: 1201},
+        {x: 1120, y: 682},
+        {x: 825, y: 563},
+        {x: 53, y: 707},
+        {x: 1470, y: 65},
+        {x: 1344, y: 1196}];
 
     for(var i = 0; i < healthEntitiesAmount; i++){
         var newHealthEntity = new HealthEntity(healthEntityPos[i]);

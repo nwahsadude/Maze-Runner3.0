@@ -6,16 +6,13 @@ game.PlayerEntity = me.Entity.extend({
 		this.id = settings.id;
 		this.name = settings.name;
         this.score = settings.score;
-        this.isCollidable = true;
 
         this.health = 10;
-        //this.score = 0;
 
         this.moving = false;
         this.runonce = false;
 
 		this.body.gravity = 0;
-		//this.type = game.MAIN_PLAYER_OBJECT;
 		this.type = "mainPlayer";
         this.body.collisionType = me.collision.types.PLAYER_OBJECT;
 
@@ -41,26 +38,17 @@ game.PlayerEntity = me.Entity.extend({
         this.renderable.addAnimation('moveleft', [0,1,2], 100);
         this.renderable.addAnimation('moveright', [3,4,5], 100);
 
-		// this.lastAnimationUsed = "stand-down";
-		// this.animationToUseThisFrame = "stand-down";
-		// this.renderable.setCurrentAnimation('stand-down');
 
 		this.lastAnimationUsed = "moveright";
 		this.animationToUseThisFrame = "moveright";
 		this.renderable.setCurrentAnimation('moveright');
         this.body.setVelocity(3.5, 3.5);
         this.body.setFriction(.4, .4);
-        //this.body.setMaxVelocity(25, 25);
 
-		//this.accelForce = 40;
-		//this.body.maxVel.x = this.body.maxVel.y = 25;
-
+        //Setup particles
         var x = this.pos.x + 16;
         var y = this.pos.y + 16;
-
         this.emitter = particleManager.playerParticles(x, y);
-        //this.emitter.name = 'smoke';
-        //this.emitter.z = 4;
         me.game.world.addChild(this.emitter);
         me.game.world.addChild(this.emitter.container);
         this.emitter.streamParticles();
@@ -68,52 +56,15 @@ game.PlayerEntity = me.Entity.extend({
 	},
 
 	update: function(dt){
-		//this.body.vel.x = 0;
-		//this.body.vel.y = 0;
-		//this.g_dt = dt / 20;
 		this.localPos = me.game.viewport.localToWorld(me.input.mouse.pos.x, me.input.mouse.pos.y);
-
-		// if (me.input.isKeyPressed('left')){
-		//     this.animationToUseThisFrame = 'run-left';a
-		//     this.body.vel.x -= 1;
-		//     this.direction = 'left';
-		// } else if (me.input.isKeyPressed('right')){
-		//     this.animationToUseThisFrame = 'run-right';
-		//     this.body.vel.x += 1;
-		//     this.direction = 'right';
-		// } else {
-		//     if (this.direction === 'left') {
-		//         this.animationToUseThisFrame = 'stand-left';
-		//     } else if (this.direction === 'right')  {
-		//         this.animationToUseThisFrame = 'stand-right';
-		//     }
-		// }
-
-		// if (me.input.isKeyPressed('up')){
-		//     this.animationToUseThisFrame = 'run-up';
-		//     this.body.vel.y -= 1;
-		//     this.direction = 'up';
-		// }else if (me.input.isKeyPressed('down')){
-		//     this.animationToUseThisFrame = 'run-down';
-		//     this.body.vel.y += 1;
-		//     this.direction = 'down';
-		// } else {
-		//     if (this.direction === 'up') {
-		//         this.animationToUseThisFrame = 'stand-up';
-		//     } else if (this.direction === 'down'){
-		//         this.animationToUseThisFrame = 'stand-down';
-		//     }
-		// }
 
 		if (me.input.isKeyPressed('left')){
 		    this.animationToUseThisFrame = 'moveleft';
-		    //this.body.vel.x -= 1;
             this.body.vel.x -= this.body.accel.x * me.timer.tick;
 		    this.direction = 'left';
 		    this.stateChanged = true;
 		} else if (me.input.isKeyPressed('right')){
 		    this.animationToUseThisFrame = 'moveright';
-		    //this.body.vel.x += 1;
             this.body.vel.x += this.body.accel.x * me.timer.tick;
 		    this.direction = 'right';
 		    this.stateChanged = true;
@@ -127,13 +78,11 @@ game.PlayerEntity = me.Entity.extend({
 
 		if (me.input.isKeyPressed('up')){
 		    this.animationToUseThisFrame = 'moveleft';
-		    //this.body.vel.y -= 1;
             this.body.vel.y -= this.body.accel.y * me.timer.tick;
 		    this.direction = 'up';
 		    this.stateChanged = true;
 		}else if (me.input.isKeyPressed('down')){
 		    this.animationToUseThisFrame = 'moveright';
-		    //this.body.vel.y += 1;
             this.body.vel.y += this.body.accel.y * me.timer.tick;
 		    this.direction = 'down';
 		    this.stateChanged = true;
@@ -150,8 +99,12 @@ game.PlayerEntity = me.Entity.extend({
 				game.fireBullet(this.id, {x: this.pos.x, y: this.pos.y}, this.localPos, true);
 				setTimeout(function() {game.mainPlayer.isWeaponCoolDown = false;}, this.weaponCoolDownTime);
 			}
-
 		}
+
+        if (me.input.isKeyPressed('pos')){
+            console.log(this.pos.x, this.pos.y);
+            this.body.setVelocity(5, 5);
+        }
 
 		if (this.animationToUseThisFrame != this.lastAnimationUsed) {
 		  this.lastAnimationUsed = this.animationToUseThisFrame;
@@ -163,24 +116,22 @@ game.PlayerEntity = me.Entity.extend({
         } else if(particleManager.enableParticles){
             this.emitter.totalParticles = 10
         }
-		//this.body.vel.normalize();
-		//this.body.vel.scale(this.body.accel * this.g_dt);
 
+        //Making particles follow player
         this.emitter.pos.x = this.pos.x + 16;
         this.emitter.pos.y = this.pos.y + 16;
 
 		this.body.update(dt);
-
 		me.collision.check(this);
 
         if(this.body.vel.x || this.body.vel.y != 0){
             if(particleManager.enableParticles){
-                this.emitter.totalParticles = 10;
+                this.emitter.streamParticles();
             }
             this.runonce = false;
             this.moving = true;
         } else {
-            this.emitter.totalParticles = 0;
+            this.emitter.stopStream();
             this.moving = false;
         }
 
@@ -199,14 +150,12 @@ game.PlayerEntity = me.Entity.extend({
 		} else {
 		    return false;
 		}
-
 	},
 
 	onCollision: function(response){
         if(response.a.type === "remoteBullet"){
             return false;
         }
-
 		return true;
 	}
 });
@@ -238,31 +187,14 @@ game.NetworkPlayerEntity = me.Entity.extend({
         this.renderable.addAnimation('moveleft', [0,1,2], 100);
         this.renderable.addAnimation('moveright', [3,4,5], 100);
 
-		// this.lastAnimationUsed = "stand-down";
-		// this.animationToUseThisFrame = "stand-down";
-		// this.renderable.setCurrentAnimation('stand-down');
-
 		this.lastAnimationUsed = "moveright";
 		this.animationToUseThisFrame = "moveright";
 		this.renderable.setCurrentAnimation('moveright');
 
+        //Setup for particles
         var x = this.pos.x + 16;
         var y = this.pos.y + 16;
-        //var image = me.loader.getImage('smoke');
-        //this.emitter = new me.ParticleEmitter(x, y, {
-        //    image: image,
-        //    totalParticles: 0,
-        //    angle: 0,
-        //    angleVariation: 0.3490658503988659,
-        //    minLife: 200,
-        //    maxLife: 300,
-        //    speed: 0,
-        //    speedVariation: 1.5,
-        //    frequency: 50
-        //});
         this.emitter = particleManager.playerParticles(x, y);
-        //this.emitter.name = 'smoke';
-        //this.emitter.z = 3;
         me.game.world.addChild(this.emitter);
         me.game.world.addChild(this.emitter.container);
         this.emitter.streamParticles();
@@ -273,16 +205,6 @@ game.NetworkPlayerEntity = me.Entity.extend({
 	update: function(dt){
 		this.body.vel.x = 0;
 		this.body.vel.y = 0;
-
-		// if (this.direction === 'up'){
-		// 	this.animationToUseThisFrame = 'run-up';
-		// } else if (this.direction === 'down') {
-		// 	this.animationToUseThisFrame = 'run-down';
-		// } else if (this.direction === 'right'){
-		// 	this.animationToUseThisFrame = 'run-right';
-		// } else if (this.direction === 'left'){
-		// 	this.animationToUseThisFrame = 'run-left';
-		// }
 
 		if (this.direction === 'up'){
 			this.animationToUseThisFrame = 'moveleft';
@@ -299,7 +221,7 @@ game.NetworkPlayerEntity = me.Entity.extend({
 		  this.renderable.setCurrentAnimation(this.animationToUseThisFrame);
 		}
 
-
+        //Making particles follow player
         this.emitter.pos.x = this.pos.x + 16;
         this.emitter.pos.y = this.pos.y + 16;
 
@@ -309,7 +231,7 @@ game.NetworkPlayerEntity = me.Entity.extend({
 		return true;
 	},
 
-	onCollision: function(response, other){
+	onCollision: function(){
 		// Make all other objects solid
 		return false;
 	},

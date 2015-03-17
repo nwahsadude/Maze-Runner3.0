@@ -15,7 +15,7 @@
                 var image = me.loader.getImage('smoke');
                 var that = new me.ParticleEmitter(x, y, {
                     image: image,
-                    totalParticles: 1,
+                    totalParticles: 10,
                     angle: 0,
                     angleVariation: 0.3490658503988659,
                     minLife: 200,
@@ -24,9 +24,8 @@
                     speedVariation: 1.5,
                     frequency: 50
                 });
-                //
-                this.name = 'smoke';
-                this.z = 3;
+                that.name = 'smoke';
+                that.z = 4;
 
                 return that;
             } else if (!this.enableParticles){
@@ -61,8 +60,8 @@
                     maxRotation: 3.14159265358979,
                     maxParticles: 50
                 });
-                this.name = 'smoke';
-                this.z = 3;
+                that.name = 'smoke';
+                that.z = 4;
 
                 return that;
             } else if (!this.enableParticles){

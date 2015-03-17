@@ -25,29 +25,10 @@ game.Bullet = me.Entity.extend({
 
         var x = this.pos.x;
         var y = this.pos.y;
-        //var image = me.loader.getImage('smoke');
-        //this.emitter = new me.ParticleEmitter(x, y, {
-        //    image: image,
-        //    totalParticles: 200,
-        //    angle: 0,
-        //    angleVariation: 0.3490658503988659,
-        //    minLife: 50,
-        //    maxLife: 100,
-        //    speed: 0,
-        //    speedVariation: 1.5,
-        //    frequency: 50,
-        //    onlyInViewport: true
-        //
-        //});
 
         this.emitter = particleManager.bulletParticles(x, y);
-        //this.emitter.name = 'smoke';
-        //this.emitter.z = 3 ;
         me.game.world.addChild(this.emitter);
         me.game.world.addChild(this.emitter.container);
-        //this.emitter.streamParticles();
-        //this.emitter.burstParticles();
-
     },
 
 	update: function(dt){
@@ -85,10 +66,9 @@ game.Bullet = me.Entity.extend({
             switch(response.b.type){
                 case "networkPlayer":
                     this.emitter.burstParticles();
-                    //console.log(this.emittera);
                     this.body.setCollisionMask(me.collision.types.NO_OBJECT);
-                    //me.game.world.removeChild(this.emitter);
-                    //me.game.world.removeChild(this.emitter.container);
+                    var that = this;
+                    this.removeParticleEmitter(that);
                     me.game.world.removeChild(this);
                     game.hitPlayer(this.id, response.b.id);
                     return false;
@@ -133,7 +113,6 @@ game.networkBullet = me.Entity.extend({
 
 		this.body.collisionType = me.collision.types.PROJECTILE_OBJECT;
         this.body.setCollisionMask(me.collision.types.WORLD_SHAPE | me.collision.types.PLAYER_OBJECT | me.collision.types.ENEMY_OBJECT);
-        //console.log(game.mainPlayer, game.players);
 
         this.shotAngle = settings.angle;
         this.renderable.angle = this.shotAngle;
@@ -150,9 +129,6 @@ game.networkBullet = me.Entity.extend({
         var y = this.pos.y + 16;
 
         this.emitter = particleManager.bulletParticles(x, y)
-        //this.emitter.name = 'smoke';
-        //this.emitter.z = 3;
-
         me.game.world.addChild(this.emitter);
         me.game.world.addChild(this.emitter.container);
 
