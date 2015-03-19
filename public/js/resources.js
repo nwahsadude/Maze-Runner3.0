@@ -1,6 +1,5 @@
 game.resources = [
 	{ name: "boy", type: "image", src: "data/img/boy.png" },
-	{ name: "rock", type: "image", src: "data/img/rock.png" },
 	{ name: "bullet", type: "image", src: "data/img/bullet.png" },
 	{ name: "rockani", type: "image", src: "data/img/rockani.png" },
 	{ name: "health", type: "image", src: "data/img/health.png" },

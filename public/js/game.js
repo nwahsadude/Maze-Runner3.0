@@ -20,7 +20,7 @@ game = {
     'onload': function () {
         me.sys.pauseOnBlur = false;
         me.sys.fps = 60;
-        me.sys.preRender = true;
+        me.sys.preRender = false;
 
         if (!me.video.init("screen", me.video.CANVAS, 640, 480, true, 'auto')) {
             alert("Your browser does not support HTML5 canvas.");
@@ -80,7 +80,6 @@ game = {
 
         ];
         var data = spawnPoints[Math.floor((Math.random() * spawnPoints.length))];
-        console.log(data.x, data.y);
         return data;
     },
 

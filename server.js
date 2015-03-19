@@ -22,6 +22,10 @@ app.get('/game', function(req, res){
 	res.render('game');
 });
 
+app.get('/credits', function(req, res){
+    res.render('credits');
+});
+
 var server = http.createServer(app),
 	io = socketio.listen(server);
 var	players,
@@ -58,10 +62,10 @@ function HEP() {
     var healthEntityPos = [
         {x: 580, y: 1201},
         {x: 1120, y: 682},
-        {x: 825, y: 563},
+        {x: 563, y: 825},
         {x: 53, y: 707},
         {x: 1470, y: 65},
-        {x: 1344, y: 1196}];
+        {x: 1344, y: 1169}];
 
     for(var i = 0; i < healthEntitiesAmount; i++){
         var newHealthEntity = new HealthEntity(healthEntityPos[i]);
