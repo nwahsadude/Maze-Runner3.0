@@ -107,18 +107,18 @@ game = {
         }
         var spawnPoint = game.getSpawnPoint();
         this.mainPlayer = me.pool.pull('mainPlayer', spawnPoint.x, spawnPoint.y, {
-            image: 'rockani',
+            image: 'ninja_f',
             spritewidth: 32,
-            spriteheight: 32,
+            spriteheight: 36,
             width: 32,
-            height: 32,
+            height: 36,
             id: data.id,
             name: data.name,
             score: 0
         });
 
         this.players.push(this.mainPlayer);
-        me.game.world.addChild(this.mainPlayer, 5);
+        me.game.world.addChild(this.mainPlayer, 6);
         $('#individualScores').append('<li>' + this.mainPlayer.name + '</li>');
     },
 
@@ -128,16 +128,16 @@ game = {
         }
         //if(!game.ready){return;}
         var player = me.pool.pull('enemyPlayer', data.x, data.y, {
-            image: 'rockani',
+            image: 'ninja_f',
             spritewidth: 32,
-            spriteheight: 32,
+            spriteheight: 36,
             width: 32,
-            height: 32,
+            height: 36,
             id: data.id,
             name: data.name
         });
         this.players.push(player);
-        me.game.world.addChild(player, 5);
+        me.game.world.addChild(player, 6);
         $('#individualScores').append('<li id=' + player.name + ">" + player.name + '</li>');
     },
 
@@ -152,8 +152,19 @@ game = {
             return;
         }
         if(!data.moving){
+            movePlayer.moving = false;
             movePlayer.emitter.stopStream();
+            if(data.direction === "up"){
+                movePlayer.animationToUseThisFrame = 'stand-up';
+            } else if (data.direction === "down"){
+                movePlayer.animationToUseThisFrame = 'stand-down';
+            } else if(data.direction === "right"){
+                movePlayer.animationToUseThisFrame = 'stand-right';
+            } else if (data.direction === "left"){
+                movePlayer.animationToUseThisFrame = 'stand-left';
+            }
         } else if(data.moving){
+            movePlayer.moving = true;
             if(particleManager.enableParticles){
                 movePlayer.emitter.streamParticles();
             }
@@ -193,7 +204,7 @@ game = {
             id: id
         });
 
-        me.game.world.addChild(obj, 4);
+        me.game.world.addChild(obj, 5);
 
         if (broadcast) {
             this.socket.emit('fireProjectile', id, source, target);
@@ -212,7 +223,7 @@ game = {
             id: id
         });
 
-        me.game.world.addChild(obj, 4);
+        me.game.world.addChild(obj, 5);
     },
 
     'hitPlayer': function (sourceId, targetId) {
@@ -282,17 +293,17 @@ game = {
         game.data.death++;
         var spawnPoint = game.getSpawnPoint();
         this.mainPlayer = me.pool.pull('mainPlayer', spawnPoint.x, spawnPoint.y, {
-            image: 'rockani',
+            image: 'ninja_f',
             spritewidth: 32,
-            spriteheight: 32,
+            spriteheight: 36,
             width: 32,
-            height: 32,
+            height: 36,
             id: data.id,
             name: data.name,
             score: data.score
         });
         this.mainPlayer.health = game.data.health;
-        me.game.world.addChild(this.mainPlayer, 5);
+        me.game.world.addChild(this.mainPlayer, 6);
         me.input.bindKey(me.input.KEY.SPACE, 'shoot');
         game.socket.emit('movePlayer', {x: this.mainPlayer.pos.x, y: this.mainPlayer.pos.y, direction: this.mainPlayer.direction});
     },

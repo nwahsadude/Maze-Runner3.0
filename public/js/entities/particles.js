@@ -25,7 +25,7 @@
                     frequency: 50
                 });
                 that.name = 'smoke';
-                that.z = 4;
+                that.z = 5;
 
                 return that;
             } else if (!this.enableParticles){
@@ -61,7 +61,7 @@
                     maxParticles: 50
                 });
                 that.name = 'smoke';
-                that.z = 4;
+                that.z = 5;
 
                 return that;
             } else if (!this.enableParticles){

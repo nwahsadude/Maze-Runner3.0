@@ -27,21 +27,21 @@ game.PlayerEntity = me.Entity.extend({
 
 		me.game.viewport.follow(this.pos, me.game.viewport.AXIS.BOTH);
 
-        this.renderable.addAnimation('stand-down', [0]);
-        this.renderable.addAnimation('run-down', [0, 4, 8, 12], 100);
-        this.renderable.addAnimation('stand-left', [1]);
-        this.renderable.addAnimation('run-left', [1, 5, 9, 13], 100);
-        this.renderable.addAnimation('stand-up', [2]);
-        this.renderable.addAnimation('run-up', [2, 6, 10, 14], 100);
-        this.renderable.addAnimation('stand-right', [3]);
-        this.renderable.addAnimation('run-right', [3, 7, 11, 15], 100);
-        this.renderable.addAnimation('moveleft', [0,1,2], 100);
-        this.renderable.addAnimation('moveright', [3,4,5], 100);
+        this.renderable.addAnimation('stand-down', [7]);
+        this.renderable.addAnimation('run-down', [6, 7, 8], 100);
+        this.renderable.addAnimation('stand-left', [10]);
+        this.renderable.addAnimation('run-left', [9, 10, 11], 100);
+        this.renderable.addAnimation('stand-up', [1]);
+        this.renderable.addAnimation('run-up', [0, 1, 2], 100);
+        this.renderable.addAnimation('stand-right', [4]);
+        this.renderable.addAnimation('run-right', [3, 4, 5], 100);
+        //this.renderable.addAnimation('moveleft', [0,1,2], 100);
+        //this.renderable.addAnimation('moveright', [3,4,5], 100);
 
 
-		this.lastAnimationUsed = "moveright";
-		this.animationToUseThisFrame = "moveright";
-		this.renderable.setCurrentAnimation('moveright');
+		this.lastAnimationUsed = "stand-down";
+		this.animationToUseThisFrame = "stand-down";
+		this.renderable.setCurrentAnimation('stand-down');
         this.body.setVelocity(3.5, 3.5);
         this.body.setFriction(.4, .4);
 
@@ -59,38 +59,38 @@ game.PlayerEntity = me.Entity.extend({
 		this.localPos = me.game.viewport.localToWorld(me.input.mouse.pos.x, me.input.mouse.pos.y);
 
 		if (me.input.isKeyPressed('left')){
-		    this.animationToUseThisFrame = 'moveleft';
+		    this.animationToUseThisFrame = 'run-left';
             this.body.vel.x -= this.body.accel.x * me.timer.tick;
 		    this.direction = 'left';
 		    this.stateChanged = true;
 		} else if (me.input.isKeyPressed('right')){
-		    this.animationToUseThisFrame = 'moveright';
+		    this.animationToUseThisFrame = 'run-right';
             this.body.vel.x += this.body.accel.x * me.timer.tick;
 		    this.direction = 'right';
 		    this.stateChanged = true;
 		} else {
 		    if (this.direction === 'left') {
-		        this.animationToUseThisFrame = 'moveleft';
+		        this.animationToUseThisFrame = 'stand-left';
 		    } else if (this.direction === 'right')  {
-		        this.animationToUseThisFrame = 'moveright';
+		        this.animationToUseThisFrame = 'stand-right';
 		    }
 		}
 
 		if (me.input.isKeyPressed('up')){
-		    this.animationToUseThisFrame = 'moveleft';
+		    this.animationToUseThisFrame = 'run-up';
             this.body.vel.y -= this.body.accel.y * me.timer.tick;
 		    this.direction = 'up';
 		    this.stateChanged = true;
 		}else if (me.input.isKeyPressed('down')){
-		    this.animationToUseThisFrame = 'moveright';
+		    this.animationToUseThisFrame = 'run-down';
             this.body.vel.y += this.body.accel.y * me.timer.tick;
 		    this.direction = 'down';
 		    this.stateChanged = true;
 		} else {
 		    if (this.direction === 'up') {
-		        this.animationToUseThisFrame = 'moveleft';
+		        this.animationToUseThisFrame = 'stand-up';
 		    } else if (this.direction === 'down'){
-		        this.animationToUseThisFrame = 'moveright';
+		        this.animationToUseThisFrame = 'stand-down';
 		    }
 		}
 		if (me.input.isKeyPressed('shoot')){
@@ -167,6 +167,7 @@ game.NetworkPlayerEntity = me.Entity.extend({
 		this.id = settings.id;
 		this.name = settings.name;
         this.alwaysUpdate = true;
+        this.moving = false;
 
         this.health = 10;
 
@@ -176,20 +177,20 @@ game.NetworkPlayerEntity = me.Entity.extend({
         this.body.setCollisionMask(me.collision.types.WORLD_SHAPE | me.collision.types.PROJECTILE_OBJECT);
 
 
-        this.renderable.addAnimation('stand-down', [0]);
-        this.renderable.addAnimation('run-down', [0, 4, 8, 12], 100);
-        this.renderable.addAnimation('stand-left', [1]);
-        this.renderable.addAnimation('run-left', [1, 5, 9, 13], 100);
-        this.renderable.addAnimation('stand-up', [2]);
-        this.renderable.addAnimation('run-up', [2, 6, 10, 14], 100);
-        this.renderable.addAnimation('stand-right', [3]);
-        this.renderable.addAnimation('run-right', [3, 7, 11, 15], 100);
-        this.renderable.addAnimation('moveleft', [0,1,2], 100);
-        this.renderable.addAnimation('moveright', [3,4,5], 100);
+        this.renderable.addAnimation('stand-down', [7]);
+        this.renderable.addAnimation('run-down', [6, 7, 8], 100);
+        this.renderable.addAnimation('stand-left', [10]);
+        this.renderable.addAnimation('run-left', [9, 10, 11], 100);
+        this.renderable.addAnimation('stand-up', [1]);
+        this.renderable.addAnimation('run-up', [0, 1, 2], 100);
+        this.renderable.addAnimation('stand-right', [4]);
+        this.renderable.addAnimation('run-right', [3, 4, 5], 100);
+        //this.renderable.addAnimation('moveleft', [0,1,2], 100);
+        //this.renderable.addAnimation('moveright', [3,4,5], 100);
 
-		this.lastAnimationUsed = "moveright";
-		this.animationToUseThisFrame = "moveright";
-		this.renderable.setCurrentAnimation('moveright');
+		this.lastAnimationUsed = "stand-down";
+		this.animationToUseThisFrame = "stand-down";
+		this.renderable.setCurrentAnimation('stand-down');
 
         //Setup for particles
         var x = this.pos.x + 16;
@@ -206,15 +207,20 @@ game.NetworkPlayerEntity = me.Entity.extend({
 		this.body.vel.x = 0;
 		this.body.vel.y = 0;
 
-		if (this.direction === 'up'){
-			this.animationToUseThisFrame = 'moveleft';
-		} else if (this.direction === 'down') {
-			this.animationToUseThisFrame = 'moveright';
-		} else if (this.direction === 'right'){
-			this.animationToUseThisFrame = 'moveright';
-		} else if (this.direction === 'left'){
-			this.animationToUseThisFrame = 'moveleft';
-		}
+
+
+        if(this.moving){
+            if (this.direction === 'up'){
+                this.animationToUseThisFrame = 'run-up';
+            } else if (this.direction === 'down') {
+                this.animationToUseThisFrame = 'run-down';
+            } else if (this.direction === 'right'){
+                this.animationToUseThisFrame = 'run-right';
+            } else if (this.direction === 'left'){
+                this.animationToUseThisFrame = 'run-left';
+            }
+        }
+
 
 		if (this.animationToUseThisFrame != this.lastAnimationUsed) {
 		  this.lastAnimationUsed = this.animationToUseThisFrame;

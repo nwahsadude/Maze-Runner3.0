@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="100" height="80" tilewidth="16" tileheight="16" nextobjectid="145">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="100" height="80" tilewidth="16" tileheight="16" nextobjectid="149">
  <tileset firstgid="1" name="tileset" tilewidth="16" tileheight="16">
   <image source="../img/map003_tiles.png" width="1024" height="2048"/>
   <terraintypes>
@@ -232,6 +232,18 @@
   </object>
   <object id="144" x="1504" y="16">
    <polyline points="0,0 0,20 80,60 80,0 4,0 0,0"/>
+  </object>
+  <object id="145" x="536" y="400">
+   <polyline points="0,0 16,0 16,8 0,8 0,0"/>
+  </object>
+  <object id="146" x="696" y="352">
+   <polyline points="0,0 16,0 16,8 0,8 0,0"/>
+  </object>
+  <object id="147" x="968" y="336">
+   <polyline points="0,0 16,0 16,8 0,8 0,0"/>
+  </object>
+  <object id="148" x="1128" y="400">
+   <polyline points="0,0 16,0 16,8 0,8 0,0"/>
   </object>
  </objectgroup>
  <layer name="On Top" width="100" height="80">
