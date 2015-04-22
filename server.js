@@ -4,33 +4,31 @@ var http = require('http'),
 	port = isProduction ? 80 : process.env.PORT || 8000,
     //port = 80,
 	express = require('express'),
-	app = express(),
 	socketio = require('socket.io'),
-	Player = require('./Player').Player,
-    HealthEntity = require('./Entities').HealthEntity;
+	Player = require('./app/models/players').Player,
+    HealthEntity = require('./app/models/entities').HealthEntity,
+    passport = require('passport'),
+    LocalStrategy = require('passport-local').Strategy;
+
+var app = express();
 
 app.set('port', port);
 app.set('views', __dirname + '/views');
 app.set('view engine', 'jade');
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.get('/', function(req, res){
-	res.render('index');
-});
 
-app.get('/game', function(req, res){
-	res.render('game');
-});
+var server = http.createServer(app);
+var io = require('./app/socketio/socketio.js').listen(server, Player, HealthEntity);
+	//io = socketio.listen(server);
 
-app.get('/credits', function(req, res){
-    res.render('credits');
-});
-
-var server = http.createServer(app),
-	io = socketio.listen(server);
 var	players,
     healthEntities,
     healthEntitiesAmount = 6;
+
+var routes = express.Router();
+require('./app/routes/routes.js')(routes, passport);
+app.use('/', routes);
 
 function init(){
 	players = [];
@@ -72,112 +70,111 @@ function HEP() {
         healthEntities.push(newHealthEntity);
     }
 }
-
-io.sockets.on('connection', function(socket){
-	console.log("Client connected");
-
-	socket.on('disconnect', function(){
-		if(players.length === 0){return;}
-		
-		console.log("Disconnect: Player has disconnected: " + this.id);
-
-		var removePlayer = playerById(this.id);
-		if(!removePlayer){
-			console.log("DISCONNECT ERROR: Player not found: " + this.id);
-			return;
-		}
-
-		io.sockets.emit("removePlayer", {id: this.id, name: this.name});
-
-		players.splice(players.indexOf(removePlayer), 1);
-	});
-
-	socket.on('gameReady', function(data){
-		var newPlayer = new Player(this.id, data.name, data.room, 100, 100, "down");
-
-        this.emit('addHealthEntity', healthEntities);
-
-		if(playerById(this.id)){
-			return;
-		}
-
-		this.emit('addMainPlayer', {id: newPlayer.id, name: newPlayer.name, x: newPlayer.getX(), y: newPlayer.getY()});
-		socket.broadcast.emit('addPlayer', {
-				id: newPlayer.id, 
-				name: newPlayer.name, 
-				x: newPlayer.getX(), 
-				y: newPlayer.getY()
-			});
-
-		for (var i = 0; i < players.length; i++) {
-			var existingPlayer = players[i];
-			this.emit("addPlayer", {
-				id: existingPlayer.id, 
-				name: existingPlayer.name, 
-				x: existingPlayer.getX(), 
-				y: existingPlayer.getY()
-			});
-		}
-
-		players.push(newPlayer);
+//io.sockets.on('connection', function(socket){
+//	console.log("Client connected");
 
 
+    //socket.on('disconnect', function(){
+		//if(players.length === 0){return;}
+		//
+		//console.log("Disconnect: Player has disconnected: " + this.id);
+    //
+		//var removePlayer = playerById(this.id);
+		//if(!removePlayer){
+		//	console.log("DISCONNECT ERROR: Player not found: " + this.id);
+		//	return;
+		//}
+    //
+		//io.sockets.emit("removePlayer", {id: this.id, name: this.name});
+    //
+		//players.splice(players.indexOf(removePlayer), 1);
+    //});
+    //
+    //socket.on('gameReady', function(data){
+		//var newPlayer = new Player(this.id, data.name, data.room, 100, 100, "down");
+    //
+    //    this.emit('addHealthEntity', healthEntities);
+    //
+		//if(playerById(this.id)){
+		//	return;
+		//}
+    //
+		//this.emit('addMainPlayer', {id: newPlayer.id, name: newPlayer.name, x: newPlayer.getX(), y: newPlayer.getY()});
+		//socket.broadcast.emit('addPlayer', {
+		//		id: newPlayer.id,
+		//		name: newPlayer.name,
+		//		x: newPlayer.getX(),
+		//		y: newPlayer.getY()
+		//	});
+    //
+		//for (var i = 0; i < players.length; i++) {
+		//	var existingPlayer = players[i];
+		//	this.emit("addPlayer", {
+		//		id: existingPlayer.id,
+		//		name: existingPlayer.name,
+		//		x: existingPlayer.getX(),
+		//		y: existingPlayer.getY()
+		//	});
+		//}
+    //
+		//players.push(newPlayer);
+    //
+    //
+    //
+    //});
+    //
+    //socket.on('movePlayer', function(data){
+		//var movePlayer = playerById(this.id);
+    //
+		//if(!movePlayer){
+		//	console.log("Move Player: Player not found: " + this.id);
+		//	return;
+		//}
+    //
+		//movePlayer.setX(data.x);
+		//movePlayer.setY(data.y);
+		//movePlayer.setDirection(data.direction);
+    //
+		//this.broadcast.emit('movePlayer', {id: movePlayer.id, x: movePlayer.getX(), y: movePlayer.getY(), direction: movePlayer.getDirection(), moving: data.moving});
+    //});
+    //
+    //socket.on('fireProjectile', function(id, source, target){
+		//socket.broadcast.emit('fireProjectile', id, source, target);
+    //});
+    //
+    //socket.on('playerHit', function(data){
+    //    this.broadcast.emit('remotePlayerHit', data);
+    //});
+    //
+    //socket.on('scoreHit', function(){
+    //
+    //});
+    //
+    //socket.on('resetPlayer', function(data){
+    //    var resetPlayer = playerById(this.id);
+    //
+    //    if(!resetPlayer){
+    //        console.log("Move Player: Player not found: " + this.id);
+    //        return;
+    //    }
+    //
+    //    this.broadcast.emit('resetPlayer', data);
+    //
+    //});
+    //
+    //socket.on('removeHealthEntity', function(data){
+    //    var healthPack = entityById(data.id);
+    //
+    //    if(!healthPack){
+    //        console.log("removeHealthEntity: Entity not found: " + data.id);
+    //        return;
+    //    }
+    //
+    //    this.broadcast.emit('removeHealthEntity', healthPack);
+    //});
 
-	});
 
-	socket.on('movePlayer', function(data){
-		var movePlayer = playerById(this.id);
-
-		if(!movePlayer){
-			console.log("Move Player: Player not found: " + this.id);
-			return;
-		}	
-
-
-		movePlayer.setX(data.x);
-		movePlayer.setY(data.y);
-		movePlayer.setDirection(data.direction);
-
-		this.broadcast.emit('movePlayer', {id: movePlayer.id, x: movePlayer.getX(), y: movePlayer.getY(), direction: movePlayer.getDirection(), moving: data.moving});
-	});
-
-	socket.on('fireProjectile', function(id, source, target){
-		socket.broadcast.emit('fireProjectile', id, source, target);
-	});
-
-	socket.on('playerHit', function(data){
-        this.broadcast.emit('remotePlayerHit', data);
-	});
-
-	socket.on('scoreHit', function(){
-
-	});
-
-	socket.on('resetPlayer', function(data){
-        var resetPlayer = playerById(this.id);
-
-        if(!resetPlayer){
-            console.log("Move Player: Player not found: " + this.id);
-            return;
-        }
-
-        this.broadcast.emit('resetPlayer', data);
-
-	});
-
-    socket.on('removeHealthEntity', function(data){
-        var healthPack = entityById(data.id);
-
-        if(!healthPack){
-            console.log("removeHealthEntity: Entity not found: " + data.id);
-            return;
-        }
-
-        this.broadcast.emit('removeHealthEntity', healthPack);
-    });
-
-
-});
+//});
 
 server.listen(app.get('port'));
 

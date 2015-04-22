@@ -1134,7 +1134,7 @@ if (!window.performance.now) {
         // create a new map reader instance
         me.mapReader = new me.TMXMapReader();
 
-        // init the App Manager
+        // init the app Manager
         me.state.init();
 
         // init the Entity Pool
