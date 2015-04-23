@@ -8,53 +8,34 @@ var http = require('http'),
 	Player = require('./app/models/players').Player,
     HealthEntity = require('./app/models/entities').HealthEntity,
     passport = require('passport'),
+    mongoose = require('mongoose'),
     LocalStrategy = require('passport-local').Strategy;
 
 var app = express();
+var gameData = {};
+
+var configDB = require('./app/config/database.js');
+mongoose.connect(configDB.url);
+//require('./app/config/passport')(passport);
 
 app.set('port', port);
 app.set('views', __dirname + '/views');
 app.set('view engine', 'jade');
 app.use(express.static(path.join(__dirname, 'public')));
 
-
 var server = http.createServer(app);
-var io = require('./app/socketio/socketio.js').listen(server, Player, HealthEntity);
-	//io = socketio.listen(server);
-
-var	players,
-    healthEntities,
-    healthEntitiesAmount = 6;
 
 var routes = express.Router();
 require('./app/routes/routes.js')(routes, passport);
 app.use('/', routes);
 
 function init(){
-	players = [];
-    healthEntities = [];
-	highScores = {};
+	gameData.players = [];
+    gameData.healthEntitiesAmount = 6;
+    gameData.healthEntities = [];
     HEP();
 }
 
-function playerById(id){
-	for (var i = 0; i < players.length; i++){
-		if (players[i].id === id){
-			return players[i];
-		}
-	}
-	return false;
-}
-
-//TODO change this proper entity search
-function entityById(id){
-	for (var i = 0; i < healthEntities.length; i++){
-		if (healthEntities[i].id === id){
-			return healthEntities[i];
-		}
-	}
-	return false;
-}
 
 function HEP() {
     var healthEntityPos = [
@@ -65,116 +46,13 @@ function HEP() {
         {x: 1470, y: 65},
         {x: 1344, y: 1169}];
 
-    for(var i = 0; i < healthEntitiesAmount; i++){
+    for(var i = 0; i < gameData.healthEntitiesAmount; i++){
         var newHealthEntity = new HealthEntity(healthEntityPos[i]);
-        healthEntities.push(newHealthEntity);
+        gameData.healthEntities.push(newHealthEntity);
     }
 }
-//io.sockets.on('connection', function(socket){
-//	console.log("Client connected");
 
-
-    //socket.on('disconnect', function(){
-		//if(players.length === 0){return;}
-		//
-		//console.log("Disconnect: Player has disconnected: " + this.id);
-    //
-		//var removePlayer = playerById(this.id);
-		//if(!removePlayer){
-		//	console.log("DISCONNECT ERROR: Player not found: " + this.id);
-		//	return;
-		//}
-    //
-		//io.sockets.emit("removePlayer", {id: this.id, name: this.name});
-    //
-		//players.splice(players.indexOf(removePlayer), 1);
-    //});
-    //
-    //socket.on('gameReady', function(data){
-		//var newPlayer = new Player(this.id, data.name, data.room, 100, 100, "down");
-    //
-    //    this.emit('addHealthEntity', healthEntities);
-    //
-		//if(playerById(this.id)){
-		//	return;
-		//}
-    //
-		//this.emit('addMainPlayer', {id: newPlayer.id, name: newPlayer.name, x: newPlayer.getX(), y: newPlayer.getY()});
-		//socket.broadcast.emit('addPlayer', {
-		//		id: newPlayer.id,
-		//		name: newPlayer.name,
-		//		x: newPlayer.getX(),
-		//		y: newPlayer.getY()
-		//	});
-    //
-		//for (var i = 0; i < players.length; i++) {
-		//	var existingPlayer = players[i];
-		//	this.emit("addPlayer", {
-		//		id: existingPlayer.id,
-		//		name: existingPlayer.name,
-		//		x: existingPlayer.getX(),
-		//		y: existingPlayer.getY()
-		//	});
-		//}
-    //
-		//players.push(newPlayer);
-    //
-    //
-    //
-    //});
-    //
-    //socket.on('movePlayer', function(data){
-		//var movePlayer = playerById(this.id);
-    //
-		//if(!movePlayer){
-		//	console.log("Move Player: Player not found: " + this.id);
-		//	return;
-		//}
-    //
-		//movePlayer.setX(data.x);
-		//movePlayer.setY(data.y);
-		//movePlayer.setDirection(data.direction);
-    //
-		//this.broadcast.emit('movePlayer', {id: movePlayer.id, x: movePlayer.getX(), y: movePlayer.getY(), direction: movePlayer.getDirection(), moving: data.moving});
-    //});
-    //
-    //socket.on('fireProjectile', function(id, source, target){
-		//socket.broadcast.emit('fireProjectile', id, source, target);
-    //});
-    //
-    //socket.on('playerHit', function(data){
-    //    this.broadcast.emit('remotePlayerHit', data);
-    //});
-    //
-    //socket.on('scoreHit', function(){
-    //
-    //});
-    //
-    //socket.on('resetPlayer', function(data){
-    //    var resetPlayer = playerById(this.id);
-    //
-    //    if(!resetPlayer){
-    //        console.log("Move Player: Player not found: " + this.id);
-    //        return;
-    //    }
-    //
-    //    this.broadcast.emit('resetPlayer', data);
-    //
-    //});
-    //
-    //socket.on('removeHealthEntity', function(data){
-    //    var healthPack = entityById(data.id);
-    //
-    //    if(!healthPack){
-    //        console.log("removeHealthEntity: Entity not found: " + data.id);
-    //        return;
-    //    }
-    //
-    //    this.broadcast.emit('removeHealthEntity', healthPack);
-    //});
-
-
-//});
+require('./app/socketio/socketio')(socketio, server, gameData, Player, HealthEntity);
 
 server.listen(app.get('port'));
 

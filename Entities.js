@@ -15,3 +15,4 @@ var HealthEntity = function(Pos){
 };
 
 exports.HealthEntity = HealthEntity;
+
