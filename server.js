@@ -5,29 +5,61 @@ var http = require('http'),
     //port = 80,
 	express = require('express'),
 	socketio = require('socket.io'),
+    session = require('express-session'),
+    cookieParser = require('cookie-parser'),
+    bodyParser = require('body-parser'),
 	Player = require('./app/models/players').Player,
     HealthEntity = require('./app/models/entities').HealthEntity,
     passport = require('passport'),
     mongoose = require('mongoose'),
-    LocalStrategy = require('passport-local').Strategy;
+    flash = require('connect-flash');
+
+var    LocalStrategy = require('passport-local').Strategy;
 
 var app = express();
 var gameData = {};
 
 var configDB = require('./app/config/database.js');
 mongoose.connect(configDB.url);
-//require('./app/config/passport')(passport);
+require('./app/config/passport')(passport);
 
 app.set('port', port);
 app.set('views', __dirname + '/views');
 app.set('view engine', 'jade');
+
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: false}));
+app.use(cookieParser());
+app.use(session({secret: 'thisbetharsecret',
+    saveUninitialized: true,
+    resave: true}));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(flash());
+
+
+
 
 var server = http.createServer(app);
 
-var routes = express.Router();
-require('./app/routes/routes.js')(routes, passport);
-app.use('/', routes);
+
+
+
+
+
+var index = express.Router();
+require('./app/routes/index')(index, passport);
+app.use('/', index);
+
+var auth = express.Router();
+require('./app/routes/users')(auth);
+app.use('/', auth);
+
+
+
+
 
 function init(){
 	gameData.players = [];

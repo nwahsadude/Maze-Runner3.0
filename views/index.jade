@@ -1,30 +1,59 @@
-doctype html
-html
-    head
-        title Maze Runner
-        link(rel='stylesheet' href='/css/game.css')
-        script(src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js')
-        meta(id='viewport', name='viewport', content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=yes')
-        script.
-            document.onkeydown = function (e) {
-                if (e.keyCode == 13) {
-                    enterGame();
-                }
-            };
-            function enterGame() {
-                var playerName = document.getElementById("playerName").value;
-                if (playerName == "") {
-                    document.getElementById("playerName").value = "YOUR NAME?";
-                } else {
-                    window.location.href = "./game?user=" + playerName + '';
-                }
-            }
-    body
-        #container
+extends layout
+block content
+    #container-narrow-fluid
+        #jumbotron
             #nameinput
-                h2="Welcome, Maze Runner! Please enter your name"
-                input#playerName(type='text')
-                a(href='#', onclick="enterGame()")="Enter Game"
-    footer
-        #nameinput
-            a(href='./credits',)="Credits"
+                h3 Login
+                form.form-horizontal(action='/', method='post')
+                    fieldset
+                        legend Login here
+                        if (message != "")
+                            div.alert.alert-error
+                                p !{message}
+                        div.control-group
+                            label.control-label(for='inputUsername') Email Address
+                            div.controls
+                                input#inputUserName.input-large(name='email', type='text', placeholder='Email Address', required)
+                        div.control-group
+                            label.control-label(for='inputPassword') Password
+                            div.controls
+                                input#inputUserName.input-large(name='password', type='password', placeholder='Password', required)
+                        div.control-group
+                            div.controls
+                                button.btn.btn-primary(type='submit') Log In
+                a.btn.btn-primary.btn-lg(href="/signup", role="button") Sign up
+//doctype html
+//html
+//    head
+//        title Maze Runner
+//        link(rel='stylesheet' href='/css/game.css')
+//        script(src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js')
+//        meta(id='viewport', name='viewport', content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=yes')
+//        script.
+//            document.onkeydown = function (e) {
+//                if (e.keyCode == 13) {
+//                    enterGame();
+//                }
+//            };
+//            function enterGame() {
+//                var playerName = document.getElementById("playerName").value;
+//                if (playerName == "") {
+//                    document.getElementById("playerName").value = "YOUR NAME?";
+//                } else {
+//                    window.location.href = "./game?user=" + playerName + '';
+//                }
+//            }
+//    body
+//        #container
+//            #nameinput
+//                if (message != '')
+//                    p hi
+//                    div.alert.alert-error
+//                        p !{message}
+//                h2="Login in"
+//                div.control-group
+//                input#playerName(type='text')
+//                a(href='#', onclick="enterGame()")="Enter Game"
+//    footer
+//        #nameinput
+//            a(href='./credits',)="Credits"

@@ -1,0 +1,27 @@
+extends layout
+block content
+    #container-narrow-fluid
+        #jumbotron
+           #nameinput
+               h3 Sign up
+               form.form-horizontal(action='/signup', method='post')
+                   fieldset
+                       Legend Sign up!
+                       //- Flash Message
+                       if (message != '')
+                           div.alert.alert-error
+                               p hiadf
+                               p !{message}
+                       div.control-group
+                           label.control-label(for='inputEmail') Email
+                           div.controls
+                               input#inputEmail.input-large(name='email', type='email', placeholder='Email address', required)
+                               //- For mailcheck
+                               div#hint
+                       div.control-group
+                           label.control-label(for='inputPassword') Password
+                           div.controls
+                               input#inputPassword.input-large(name='password', minlength="4", type='password', placeholder='Password', required)
+                       div.control-group
+                           div.controls
+                               button.btn.btn-primary(type='submit') Sign Up
