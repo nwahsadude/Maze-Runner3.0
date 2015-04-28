@@ -19,6 +19,10 @@ block content
                                //- For mailcheck
                                div#hint
                        div.control-group
+                           label.control-label(for='inputUsername') Username
+                           div.controls
+                              input#inputEmail.input-large(name='username', type='string', placeholder='Username', required)
+                       div.control-group
                            label.control-label(for='inputPassword') Password
                            div.controls
                                input#inputPassword.input-large(name='password', minlength="4", type='password', placeholder='Password', required)
