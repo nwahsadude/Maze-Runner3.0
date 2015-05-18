@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 var http = require('http'),
 	path = require('path'),
 	isProduction = (process.env.NODE_ENV === 'production'),
@@ -14,7 +15,7 @@ var http = require('http'),
     mongoose = require('mongoose'),
     flash = require('connect-flash');
 
-var    LocalStrategy = require('passport-local').Strategy;
+var LocalStrategy = require('passport-local').Strategy;
 
 var app = express();
 var gameData = {};
@@ -40,13 +41,7 @@ app.use(passport.session());
 app.use(flash());
 
 
-
-
 var server = http.createServer(app);
-
-
-
-
 
 
 var index = express.Router();
@@ -56,9 +51,6 @@ app.use('/', index);
 var auth = express.Router();
 require('./app/routes/users')(auth);
 app.use('/', auth);
-
-
-
 
 
 function init(){

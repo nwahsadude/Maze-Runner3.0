@@ -1,6 +1,7 @@
 game.resources = [
 	{ name: "ninja_f", type: "image", src: "data/img/ninja_f.png" },
-	{ name: "bullet", type: "image", src: "data/img/bullet.png" },
+	{ name: "bulletold", type: "image", src: "data/img/bullet.png" },
+	{ name: "bullet", type: "image", src: "data/img/banana.png" },
 	{ name: "health", type: "image", src: "data/img/health.png" },
 	{ name: "smoke", type: "image", src: "data/img/smoke.png" },
 	{ name: "map001_tiles", type: "image", src: "data/img/map001_tiles.png"},

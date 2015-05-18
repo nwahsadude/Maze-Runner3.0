@@ -11,9 +11,10 @@ game.Bullet = me.Entity.extend({
 		this.body.collisionType = me.collision.types.PROJECTILE_OBJECT;
 		this.body.setCollisionMask(me.collision.types.WORLD_SHAPE | me.collision.types.ENEMY_OBJECT);
 
-		this.shotAngle = settings.angle;
-		this.renderable.angle = this.shotAngle;
-		this.maxVelocity = settings.maxVelocity || 15;
+        //this.shotAngle = settings.angle;
+        //this.renderable.angle = this.shotAngle;
+
+		this.maxVelocity = settings.maxVelocity || 5;
 
 		var localX = (settings.target.x - x);
 		var localY = (settings.target.y - y);
@@ -34,6 +35,8 @@ game.Bullet = me.Entity.extend({
 	update: function(dt){
 		this.body.vel.x += this.body.accel.x * me.timer.tick;
 		this.body.vel.y += this.body.accel.y * me.timer.tick;
+        this.renderable.angle += .5 * me.timer.tick;
+
 
 		this.body.computeVelocity(this.body.vel);
 
